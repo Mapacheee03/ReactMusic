@@ -14,7 +14,7 @@ body {
 /* ========== SIDEBAR ========== */
 .sidebar {
     width: 300px;
-    background: #000000;
+    background: linear-gradient(57deg, #070020, #000000);
     padding: 20px;
     border-right: 1px solid #333;
     display: flex;
@@ -81,9 +81,11 @@ body {
     margin-bottom: 15px;
     font-weight: 600;
 }
-.U{
+
+.U {
     margin-top: 20px;
 }
+
 .nav-item {
     border-radius: 10px;
     display: flex;
@@ -101,7 +103,7 @@ body {
 }
 
 .nav-item i {
-   
+
     width: auto;
 
 }
@@ -144,20 +146,13 @@ body {
 }
 
 .genre-tag {
-    background: #1db954;
-    color: white;
     padding: 6px 12px;
-    /* antes 8px 16px */
+    margin: 4px;
     border-radius: 20px;
-    font-size: 11px;
-    /* antes 12px */
-    font-weight: 600;
-    white-space: nowrap;
-    flex-shrink: 1;
-    min-width: 0;
-    max-width: 100%;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    background-color: #444;
+    color: white;
+    font-size: 13px;
+    display: inline-block;
 }
 
 .genre-tag.rock {
@@ -179,10 +174,11 @@ body {
 .genre-tag.others {
     background: #34495e;
 }
+
 .material-symbols-outlined {
-  font-variation-settings:
-  'FILL'0,
-  'wght' 400,
-  'GRAD'0,
-  'opsz' 24
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
 }

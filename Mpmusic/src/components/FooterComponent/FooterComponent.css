@@ -1,20 +1,20 @@
-
-/* ========== PLAYER BAR ========== */
-.player-bar,
+/* ========== PLAYER BAR GENERAL ========== */
 footer.player-bar {
-    background: #000000;
-    /* negro */
+    background: linear-gradient(57deg, #070020, #000000);
     padding: 15px 20px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    /* izquierda (info), centro (controles), derecha (volumen) */
     align-items: center;
-    justify-content: space-between;
     border-top: 1px solid #333;
     color: white;
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 100;
 }
 
+/* ========== NOW PLAYING INFO (IZQUIERDA) ========== */
 .now-playing {
     display: flex;
     align-items: center;
@@ -39,14 +39,20 @@ footer.player-bar {
     color: #aaa;
 }
 
-
+/* ========== PLAYER CONTROLS (CENTRO) ========== */
+.player-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px; /* espacio entre controles y volumen */
+    grid-column: 2; /* asegura que esté al centro */
+}
 
 .player-controls {
     display: flex;
     align-items: center;
     gap: 15px;
 }
-
 .control-btn {
     background: none;
     border: none;
@@ -70,63 +76,62 @@ footer.player-bar {
     justify-content: center;
     font-size: 14px;
 }
+
+/* ========== VOLUME CONTROLS (DERECHA) ========== */
 .volume-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-width: 120px;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-content: center;
+    justify-content: flex-end;
+    flex-direction: row;
 }
-
 .volume-slider {
     width: 80px;
-    height: 6px;
-    background: #444;
-    border-radius: 4px;
-    position: relative;
+    height: 4px;
+    background-color: #555;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .volume-progress {
+    width: 50%; /* inicial */
     height: 100%;
-    background: #8e44ad;
-    border-radius: 4px;
+    background-color: #1db954;
 }
 
+/* ========== SONG PROGRESS BAR (INFERIOR) ========== */
 .song-progress-bar {
-    position: fixed;
-    bottom: 80px;
-    /* 🔼 Súbela más arriba del footer */
-    width: 100%;
-    padding: 0 20px;
+    grid-column: span 3;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: #000;
-    z-index: 1000;
-    height: 24px;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    margin-top: 10px;
+    gap: 10px;
+    font-size: 12px;
+    color: white;
 }
 
 .progress-container {
     flex: 1;
-    height: 6px;
-    background: #333;
-    margin: 0 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    position: relative;
+    height: 4px;
+    background: #444;
+    border-radius: 4px;
     overflow: hidden;
+    position: relative;
 }
 
 .song-progress {
     height: 100%;
-    width: 0%;
     background: #1db954;
-    transition: width 0.2s linear;
+    width: 0%;
+    transition: width 0.3s ease;
 }
 
 .time {
     font-size: 12px;
-    color: #ccc;
-    min-width: 40px;
+    color: #aaa;
+    width: 35px;
     text-align: center;
 }

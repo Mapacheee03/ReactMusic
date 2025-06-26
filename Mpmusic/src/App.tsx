@@ -1,13 +1,19 @@
-import PrincipalPage from '../src/pages/PrincipalPage/PrincipalPage'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import PrincipalPage from './pages/PrincipalPage/PrincipalPage';
+import AlbumsPages from './pages/AlbumsPages/AlbumsPages';
+import ArtistasPages from './pages/ArtistasPages/ArtistasPages';
+import './Style/global.css'
 
 function App() {
-
   return (
-    <>
-      <PrincipalPage />
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PrincipalPage />} />
+        <Route path="/album/:albumId" element={<AlbumsPages />} />
+        <Route path="/artistas" element={<ArtistasPages/>}/>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
