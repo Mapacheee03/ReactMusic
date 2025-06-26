@@ -7,6 +7,7 @@ export interface Artista {
     nacionalidad: string;
     genero: string;
     imagen: string;
+    biografia:string;
 }
 
 export interface AlbumCompleto {

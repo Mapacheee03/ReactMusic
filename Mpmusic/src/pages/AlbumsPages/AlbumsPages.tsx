@@ -5,7 +5,6 @@ import { ApiMusica } from '../../services/api';
 import type { AlbumCompleto, Cancion } from '../../services/api';
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
-import SearchComponent from '../../components/SearchComponent/SearchComponent';
 
 function AlbumPage() {
     const { albumId } = useParams();
@@ -92,7 +91,6 @@ function AlbumPage() {
         <div className={styles.container}>
             <SideBarComponent />
             <div className={styles.mainContent}>
-              <SearchComponent />
                 <div className={styles.albumSection}>
                     <div className={styles.albumHeader}>
                         <div

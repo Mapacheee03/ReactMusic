@@ -5,7 +5,6 @@ import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import { ApiMusica } from '../../services/api';
 import { Link } from 'react-router-dom';
 import type { Cancion, AlbumResumen } from '../../services/api';
-import SearchComponent from '../../components/SearchComponent/SearchComponent';
 
 function PrincipalPage() {
     const [canciones, setCanciones] = useState<Cancion[]>([]);
@@ -89,7 +88,6 @@ function PrincipalPage() {
         <div className={styles.container}>
             <SideBarComponent />
             <div className={styles.mainContent}>
-                <SearchComponent />
                 <div className={styles.heroSection}>
                     <div className={styles.newRelease}>
                         <div className={styles.newReleaseLabel}>New Releases!</div>
@@ -108,7 +106,9 @@ function PrincipalPage() {
                                 <Link key={album.id} to={`/album/${album.id}`} className={styles.albumCard}>
                                     <div
                                         className={styles.albumCover}
-                                        style={{ backgroundImage: `url(${album.portada})` }}
+
+                                        style={album.portada.length < 0 ?
+                                            { backgroundImage: `url(${album.portada})` }: {}}
                                     ></div>
                                     <div className={styles.albumInfo}>
                                         <h3>{album.titulo}</h3>
@@ -133,7 +133,7 @@ function PrincipalPage() {
                                     <span className={styles.trackNumber}>{cancion.id}</span>
                                     <div
                                         className={styles.trackCover}
-                                        style={{ backgroundImage: `url(${cancion.albumCompleto.portada})` }}
+                                        style={cancion.albumCompleto.portada.length < 0 ? { backgroundImage: `url(${cancion.albumCompleto.portada})` }:{}}
                                     ></div>
                                     <div className={styles.trackInfo}>
                                         <div className={styles.trackName}>{cancion.titulo}</div>

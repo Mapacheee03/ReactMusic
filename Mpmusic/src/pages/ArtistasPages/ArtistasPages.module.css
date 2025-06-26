@@ -1,93 +1,76 @@
-/* Contenedor principal */
 .container {
-  background-color: #000000;
-  min-height: 100vh;
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  background: linear-gradient(57deg, #070020, #000000);
+  color: white;
 }
 
-/* Lista de artistas */
-.artist-list {
-  max-width: 600px;
-  margin: 0 auto;
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Elemento individual de artista */
-.artist-item {
+.artistList {
+  flex: 1;
+  padding: 30px;
+  padding-bottom: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.artistItem {
   display: flex;
   align-items: center;
+  gap: 16px;
   padding: 12px 16px;
-  border-bottom: 1px solid #333333;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  border-radius: 8px;
+  transition: background 0.2s ease-in-out;
 }
 
-.artist-item:hover {
-  background-color: #1a1a1a;
+.artistItem:hover {
+  background: #1f2937;
 }
 
-.artist-item:last-child {
-  border-bottom: none;
-}
-
-/* Contenedor del avatar */
-.avatar-container {
-  margin-right: 16px;
+.avatarContainer {
   flex-shrink: 0;
 }
 
-/* Avatar circular */
 .avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 90px;
+  height: 90px;
   object-fit: cover;
+  background: linear-gradient(50deg, #3604e9, #000000);
+  display: flex;
+  display: block;
+  border-radius: 50%;
+  border: 2px solid #4ade80;
+  box-shadow: 0 0 0 2px (34, 197, 94, 0.5);
 }
 
-/* Información del artista */
-.artist-info {
-  flex: 1;
-  min-width: 0;
+.artistInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/* Nombre del artista */
-.artist-name {
-  color: #ffffff;
-  font-weight: 500;
-  font-size: 16px;
-  margin: 0 0 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.artistName {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
 }
 
-/* Contador de canciones */
-.song-count {
-  color: #999999;
+.songCount {
   font-size: 14px;
-  margin: 0;
+  color: #9ca3af;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .artist-item {
-    padding: 10px 12px;
-  }
-  
-  .avatar {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .avatar-container {
-    margin-right: 12px;
-  }
-  
-  .artist-name {
-    font-size: 14px;
-  }
-  
-  .song-count {
-    font-size: 12px;
-  }
+.h1{
+  font-size: 4vh;
+  margin-left:3%;
 }

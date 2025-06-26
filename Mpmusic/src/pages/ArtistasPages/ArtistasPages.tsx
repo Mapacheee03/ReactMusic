@@ -1,33 +1,67 @@
-// import FooterComponent from '../../components/FooterComponent/FooterComponent';
+import { useEffect, useState } from 'react';
 import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
-import SearchComponent from '../../components/SearchComponent/SearchComponent';
-// import styles from './AlbumPage.module.css';
-
+import FooterComponent from '../../components/FooterComponent/FooterComponent';
+import styles from './ArtistasPages.module.css';
+import { ApiMusica } from '../../services/api';
+import type { Artista, Cancion } from '../../services/api';
 
 function ArtistasPages() {
+    const [artistas, setArtistas] = useState<Artista[]>([]);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [cancionActual] = useState<Cancion | undefined>(undefined);
+
+    useEffect(() => {
+        ApiMusica.getArtistas()
+            .then(setArtistas)
+            .catch(error => console.error('Error al cargar artistas:', error));
+    }, []);
+
+    // Simulación de control
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleNext = () => console.log('Siguiente canción');
+    const handlePrev = () => console.log('Canción anterior');
+
     return (
-
-        <div className="container">
+        <div className={styles.container}>
             <SideBarComponent />
-            <SearchComponent />
 
-            <div className="artist-list">
-                <div className="artist-item">
-                    <div className="avatar-container">
-                        <img
-                            src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=64&h=64&fit=crop&crop=face"
-                            alt="División Minúscula"
-                            className="avatar"
-                        />
-                    </div>
-                    <div className="artist-info">
-                        <h3 className="artist-name">División Minúscula</h3>
-                        <p className="song-count">1 canción</p>
-                    </div>
+            <div className={styles.mainContent}>
+
+                <div className={styles.artistList}>
+                    <h1 className={styles.h1}>Artistas</h1>
+                    {artistas.map(artista => (
+                        <div className={styles.artistItem} key={artista.id}>
+                            <div className={styles.avatarContainer}>
+                                <img
+                                    // src={artista.imagen}
+                                    className={styles.avatar}
+                                />
+                            </div>
+                            <div className={styles.artistInfo}>
+                                <h3 className={styles.artistName}>{artista.nombre}</h3>
+                                <p className={styles.songCount}>
+                                    {artista.genero} – {artista.nacionalidad}
+                                </p>
+                                <p className={styles.songCount}>
+                                    {artista.biografia}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
-        </div>
 
-    )
+            <FooterComponent
+                cancionActual={cancionActual}
+                onPlay={handlePlay}
+                onPause={handlePause}
+                onNext={handleNext}
+                onPrev={handlePrev}
+                isPlaying={isPlaying}
+            />
+        </div>
+    );
 }
+
 export default ArtistasPages;
