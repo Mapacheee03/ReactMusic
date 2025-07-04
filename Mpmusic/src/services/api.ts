@@ -18,7 +18,7 @@ export interface AlbumCompleto {
     genero: string;
     duracionTotal: string;
     numeroTracks: number;
-    portada: string;
+    imagen: string;
     descripcion: string;
     sello: string;
     productor: string;
@@ -44,6 +44,7 @@ export interface AlbumResumen {
     añoLanzamiento: number;
     genero: string;
     portada: string;
+    sello:string;
     numeroCanciones: number;
     infoCanciones: Cancion;
 }
@@ -82,9 +83,10 @@ export const ApiMusica = {
                     artista: cancion.artistaCompleto.nombre,
                     añoLanzamiento: cancion.albumCompleto.añoLanzamiento,
                     genero: cancion.albumCompleto.genero,
-                    portada: cancion.albumCompleto.portada,
+                    portada: cancion.albumCompleto.imagen,
+                    sello: cancion.albumCompleto.sello,
                     numeroCanciones: cancion.albumCompleto.numeroTracks,
-                    infoCanciones: cancion, // Primera canción que aparece del álbum
+                    infoCanciones: cancion, 
                 });
             }
         });

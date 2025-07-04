@@ -1,84 +1,95 @@
 .container {
-    display: flex;
-    height: 100vh;
+  display: flex;
+  height: 100vh;
 }
 
 .mainContent {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding-bottom: 120px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 120px;
 }
 
 .heroSection {
-    padding: 30px;
-    flex: 1;
-    overflow-y: auto;
-    padding-bottom: 120px;
+  padding: 30px;
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 120px;
 }
 
 .heroSection::-webkit-scrollbar {
-    width: 10px;
-    height: 1px;
+  width: 10px;
+  height: 1px;
 }
 
 .heroSection::-webkit-scrollbar-track {
-    background: #222;
-    border-radius: 4px;
+  background: #222;
+  border-radius: 4px;
 }
 
 .heroSection::-webkit-scrollbar-thumb {
-    background-color: #000000;
-    border-radius: 10px;
-    border: 1px solid #222;
+  background-color: #000000;
+  border-radius: 10px;
+  border: 1px solid #222;
 }
 
 .newRelease {
-    margin-bottom: 40px;
-    background: linear-gradient(40deg, #f4aeae, #000cf8);
-    background-size: cover;
-    background-color: #000000;
-    border-radius: 20px;
-    font-size: 24px;
-    font-weight: 500;
-    padding: 30px;
+  height: 300px; /* ALTURA FIJA */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #000000;
+  border-radius: 20px;
+  font-size: 24px;
+  font-weight: 500;
+  padding: 50px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  overflow: hidden;
 }
 
 .newReleaseLabel {
-    color: #000000;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
+  color: #1a6c05;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
 }
 
 .heroContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .heroText h2 {
-    font-size: 72px;
-    font-weight: 500;
-    line-height: 1.5;
-    color: white;
+  font-size: 72px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: white;
+  margin: 0;
 }
 
 .playButton {
-    background: #1db954;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
+  background: #1db954;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .playButton:hover {
-    background: #1ed760;
+  background: #1ed760;
 }
+
+/* el resto queda igual... */
+
 
 .section {
     margin-bottom: 40px;

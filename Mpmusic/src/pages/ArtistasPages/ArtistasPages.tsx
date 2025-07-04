@@ -34,7 +34,7 @@ function ArtistasPages() {
                         <div className={styles.artistItem} key={artista.id}>
                             <div className={styles.avatarContainer}>
                                 <img
-                                    // src={artista.imagen}
+                                    src={artista.imagen}
                                     className={styles.avatar}
                                 />
                             </div>

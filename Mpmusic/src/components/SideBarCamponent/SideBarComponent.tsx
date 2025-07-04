@@ -34,9 +34,9 @@ function SideBarComponent() {
         <Link to="/artistas" className="nav-item">
           <span className="material-symbols-outlined">artist</span> Artistas
         </Link>
-        <Link to="/nueva-playlist" className="nav-item">
+        {/* <Link to="/nueva-playlist" className="nav-item">
           <span className="material-symbols-outlined">add</span> Nueva Playlist
-        </Link>
+        </Link> */}
 
         <div className="nav-title">Your Top Genres</div>
         <div className="genre-tags sidebar-tags">

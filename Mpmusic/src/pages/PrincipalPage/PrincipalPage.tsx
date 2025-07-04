@@ -14,6 +14,9 @@ function PrincipalPage() {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement>(null);
 
+    // Estado para el carrusel hero
+    const [indiceHero, setIndiceHero] = useState<number>(0);
+
     useEffect(() => {
         ApiMusica.getCanciones()
             .then(data => {
@@ -29,6 +32,17 @@ function PrincipalPage() {
             .then(setAlbumes)
             .catch(console.error);
     }, []);
+
+    // Cambio automático del hero cada 5 segundos
+    useEffect(() => {
+        if (albumes.length === 0) return;
+
+        const intervalo = setInterval(() => {
+            setIndiceHero(prev => (prev + 1) % albumes.length);
+        }, 5000); // 5000 ms = 5 segundos
+
+        return () => clearInterval(intervalo);
+    }, [albumes]);
 
     // Reproducir canción por índice
     const reproducirCancion = (index: number) => {
@@ -64,7 +78,6 @@ function PrincipalPage() {
         reproducirCancion(prevIndex);
     };
 
-    // Mantener isPlaying sincronizado con el audio
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -84,21 +97,44 @@ function PrincipalPage() {
         };
     }, [onNext]);
 
+    // Obtenemos el álbum actual para el hero
+    const albumHero = albumes[indiceHero];
+
     return (
         <div className={styles.container}>
             <SideBarComponent />
             <div className={styles.mainContent}>
                 <div className={styles.heroSection}>
-                    <div className={styles.newRelease}>
-                        <div className={styles.newReleaseLabel}>New Releases!</div>
-                        <div className={styles.heroContainer}>
-                            <div className={styles.heroText}>
-                                <h2>Light Downs Low MAX</h2>
-                                <button className={styles.playButton}>Play Now!</button>
+                    {albumHero ? (
+                        <div className={styles.newRelease}
+                            style={{
+                                backgroundImage: albumHero.portada
+                                    ? `url(${albumHero.portada})`
+                                    : ` url('/src/assets/Frame 1.png')`,
+                            }}
+                       >
+                            <div className={styles.newReleaseLabel}>New Releases!</div>
+                            <div className={styles.heroContainer}>
+                                <div className={styles.heroText}>
+                                    <h2>{albumHero.titulo}</h2>
+                                    <button
+                                        className={styles.playButton}
+                                        onClick={() => {
+                                            // Buscar canción del álbum para reproducir
+                                            const indiceCancion = canciones.findIndex(c => c.albumCompleto?.id === albumHero.id);
+                                            if (indiceCancion !== -1) reproducirCancion(indiceCancion);
+                                        }}
+                                    >
+                                        Play Now!
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div>Cargando álbumes...</div>
+                    )}
 
+                    {/* Resto de secciones (Albums Recientes, Música) sin cambios */}
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Albums Recientes</h3>
                         <div className={styles.albumsGrid}>
@@ -106,14 +142,16 @@ function PrincipalPage() {
                                 <Link key={album.id} to={`/album/${album.id}`} className={styles.albumCard}>
                                     <div
                                         className={styles.albumCover}
-
-                                        style={album.portada.length < 0 ?
-                                            { backgroundImage: `url(${album.portada})` }: {}}
+                                        style={album.portada && album.portada.length < 0
+                                            ? { backgroundImage: `url(${album.portada})` }
+                                            : {}}
                                     ></div>
                                     <div className={styles.albumInfo}>
                                         <h3>{album.titulo}</h3>
                                         <p>{album.artista} · {album.añoLanzamiento}</p>
                                         <p>{album.numeroCanciones} canciones</p>
+                                        <p></p>
+                                        <p>- {album.sello} -</p>
                                     </div>
                                 </Link>
                             ))}
@@ -130,10 +168,12 @@ function PrincipalPage() {
                                     onClick={() => reproducirCancion(index)}
                                     style={{ cursor: 'pointer' }}
                                 >
-                                    <span className={styles.trackNumber}>{cancion.id}</span>
+                                    <span className={styles.trackNumber}>{index + 1}</span>
                                     <div
                                         className={styles.trackCover}
-                                        style={cancion.albumCompleto.portada.length < 0 ? { backgroundImage: `url(${cancion.albumCompleto.portada})` }:{}}
+                                        style={cancion.albumCompleto?.imagen
+                                            ? { backgroundImage: `url(${cancion.albumCompleto.imagen})` }
+                                            : {}}
                                     ></div>
                                     <div className={styles.trackInfo}>
                                         <div className={styles.trackName}>{cancion.titulo}</div>
@@ -159,7 +199,7 @@ function PrincipalPage() {
                 isPlaying={isPlaying}
             />
 
-            <audio ref={audioRef} src={cancionActual?.audioUrl} />
+            <audio ref={audioRef} src={cancionActual?.audioUrl || undefined} />
         </div>
     );
 }

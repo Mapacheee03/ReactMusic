@@ -44,8 +44,10 @@ footer.player-bar {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 30px; /* espacio entre controles y volumen */
-    grid-column: 2; /* asegura que esté al centro */
+    gap: 30px;
+    /* espacio entre controles y volumen */
+    grid-column: 2;
+    /* asegura que esté al centro */
 }
 
 .player-controls {
@@ -53,6 +55,7 @@ footer.player-bar {
     align-items: center;
     gap: 15px;
 }
+
 .control-btn {
     background: none;
     border: none;
@@ -81,22 +84,40 @@ footer.player-bar {
 .volume-controls {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
     gap: 8px;
-    align-content: center;
-    justify-content: flex-end;
-    flex-direction: row;
+    justify-content: end;
 }
+
 .volume-slider {
     width: 80px;
     height: 4px;
     background-color: #555;
     border-radius: 5px;
-    overflow: hidden;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #1db954;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: #1db954;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
 .volume-progress {
-    width: 50%; /* inicial */
+    width: 50%;
+    /* inicial */
     height: 100%;
     background-color: #1db954;
 }
@@ -114,19 +135,42 @@ footer.player-bar {
 }
 
 .progress-container {
+    position: relative;
     flex: 1;
-    height: 4px;
+    height: 6px;
     background: #444;
     border-radius: 4px;
-    overflow: hidden;
-    position: relative;
+    cursor: pointer;
 }
 
 .song-progress {
     height: 100%;
     background: #1db954;
     width: 0%;
-    transition: width 0.3s ease;
+    transition: width 0.2s ease;
+    border-radius: 4px;
+    z-index: 1;
+    position: relative;
+}
+
+/* Bola de progreso (draggable thumb) */
+.progress-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background-color: #1db954;
+    border: 2px solid #1db954;
+    border-radius: 50%;
+    cursor: grab;
+    z-index: 2;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.progress-thumb:hover {
+    background-color: #1db954;
+    transform: translate(-50%, -50%) scale(1.1);
 }
 
 .time {
