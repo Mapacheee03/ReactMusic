@@ -9,10 +9,15 @@
     flex-direction: column; /* para que el search quede arriba y el contenido abajo */
     background: #000;
     color: white;
+
+    user-select: none;           /* Evita selección de texto */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .albumSection {
-     padding: 30px;
+    padding: 30px;
     flex: 1;
     overflow-y: auto;
     padding-bottom: 120px;

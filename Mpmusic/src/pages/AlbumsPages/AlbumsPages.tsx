@@ -6,6 +6,18 @@ import type { AlbumCompleto, Cancion } from '../../services/api';
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
 
+const BASE_URL = 'https://api-musica.netlify.app/';
+
+function buildImageUrl(path?: string) {
+    if (!path || path.trim() === '') return '';
+    const safePath = path.startsWith('/') ? path.slice(1) : path;
+    const encodedPath = safePath
+        .split('/')
+        .map(segment => encodeURIComponent(segment).replace(/'/g, '%27'))
+        .join('/');
+    return `${BASE_URL}${encodedPath}`;
+}
+
 function AlbumPage() {
     const { albumId } = useParams();
     const [album, setAlbum] = useState<AlbumCompleto | null>(null);
@@ -23,17 +35,15 @@ function AlbumPage() {
             });
             ApiMusica.getCanciones().then(canciones => {
                 const filtradas = canciones.filter(c => c.albumCompleto.id === parseInt(albumId));
-                // Para demo: asigna url de audio de prueba (reemplaza por real)
                 const cancionesConAudio = filtradas.map(c => ({
                     ...c,
-                    audioUrl: '',
+                    audioUrl: '', // Pon aquí la URL real si la tienes
                 }));
                 setCanciones(cancionesConAudio);
             });
         }
     }, [albumId]);
 
-    // Reproducir una canción por índice
     const reproducirCancion = (index: number) => {
         const cancion = canciones[index];
         setCancionActual(cancion);
@@ -66,37 +76,31 @@ function AlbumPage() {
         reproducirCancion(prevIndex);
     };
 
-    // // Actualiza el tiempo y duración conforme avanza la canción
-    // useEffect(() => {
-    //     const audio = audioRef.current;
-    //     if (!audio) return;
-
-    //     // const actualizarTiempo = () => {
-    //     //     setCurrentTime(audio.currentTime);
-    //     //     setDuration(audio.duration || 0);
-    //     // };
-
-    //     audio.addEventListener('timeupdate', actualizarTiempo);
-    //     audio.addEventListener('ended', onNext);
-
-    //     return () => {
-    //         audio.removeEventListener('timeupdate', actualizarTiempo);
-    //         audio.removeEventListener('ended', onNext);
-    //     };
-    // }, [cancionActual, onNext]);
-
     if (!album) return <div>Cargando...</div>;
 
     return (
         <div className={styles.container}>
             <SideBarComponent />
-            <div className={styles.mainContent}>
+            <div
+                className={styles.mainContent}
+                style={{
+                    userSelect: 'none',          // Evita selección de texto en toda esta zona
+                    WebkitUserSelect: 'none',
+                    MozUserSelect: 'none',
+                    msUserSelect: 'none',
+                }}
+            >
                 <div className={styles.albumSection}>
                     <div className={styles.albumHeader}>
                         <div
                             className={styles.albumCover}
-                        // style={{ backgroundImage: `url(${album.portada})` }}
-                        ></div>
+                            style={{ 
+                                backgroundImage: `url(${buildImageUrl(album.portada)})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                borderRadius: '8px'
+                            }}
+                        />
                         <div className={styles.albumDetails}>
                             <div className={styles.artistBadge}>
                                 <div className={styles.verifiedIcon}></div>

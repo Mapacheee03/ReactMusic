@@ -3,6 +3,10 @@
   height: 100vh;
   background: linear-gradient(57deg, #070020, #000000);
   color: white;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .mainContent {
@@ -70,7 +74,7 @@
   color: #9ca3af;
 }
 
-.h1{
+.h1 {
   font-size: 4vh;
-  margin-left:3%;
+  margin-left: 3%;
 }

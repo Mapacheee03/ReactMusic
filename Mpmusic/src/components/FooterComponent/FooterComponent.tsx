@@ -11,6 +11,18 @@ interface FooterProps {
     isPlaying: boolean;
 }
 
+const BASE_URL = 'https://api-musica.netlify.app/';
+
+function buildImageUrl(path?: string) {
+    if (!path || path.trim() === '') return '';
+    const safePath = path.startsWith('/') ? path.slice(1) : path;
+    const encodedPath = safePath
+        .split('/')
+        .map(segment => encodeURIComponent(segment).replace(/'/g, '%27'))
+        .join('/');
+    return `${BASE_URL}${encodedPath}`;
+}
+
 function FooterComponent({
     cancionActual,
     onPlay,
@@ -21,7 +33,7 @@ function FooterComponent({
 }: FooterProps) {
     const [currentTime, setCurrentTime] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
-    const [volume, setVolume] = useState(0.5); // 0 a 1
+    const [volume, setVolume] = useState(0.5);
     const [isMuted, setIsMuted] = useState(false);
 
     const intervalRef = useRef<number | null>(null);
@@ -41,7 +53,6 @@ function FooterComponent({
         return `${min}:${sec.toString().padStart(2, '0')}`;
     };
 
-    // Avance automático
     useEffect(() => {
         if (isPlaying && totalSeconds > 0 && !isDragging) {
             intervalRef.current = window.setInterval(() => {
@@ -49,14 +60,13 @@ function FooterComponent({
                     if (prevTime + 1 >= totalSeconds) {
                         clearInterval(intervalRef.current!);
                         intervalRef.current = null;
-                        onNext(); // ⏭️ Pasa a la siguiente canción
+                        onNext();
                         return 0;
                     }
                     return prevTime + 1;
                 });
             }, 1000);
         }
-
         return () => {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
@@ -65,7 +75,6 @@ function FooterComponent({
         };
     }, [isPlaying, totalSeconds, isDragging, onNext]);
 
-    // Reiniciar tiempo al cambiar de canción
     useEffect(() => {
         setCurrentTime(0);
     }, [cancionActual]);
@@ -107,7 +116,6 @@ function FooterComponent({
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseup", handleMouseUp);
         }
-
         return () => {
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseup", handleMouseUp);
@@ -121,8 +129,7 @@ function FooterComponent({
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newVolume = parseFloat(e.target.value);
         setVolume(newVolume);
-        if (newVolume === 0) setIsMuted(true);
-        else setIsMuted(false);
+        setIsMuted(newVolume === 0);
     };
 
     return (
@@ -131,7 +138,7 @@ function FooterComponent({
                 <div
                     className="now-playing-cover"
                     style={{
-                        backgroundImage: `url(${cancionActual?.albumCompleto.imagen || ''})`,
+                        backgroundImage: `url(${buildImageUrl(cancionActual?.albumCompleto.portada)})`,
                         backgroundSize: 'cover',
                         width: '60px',
                         height: '60px',
@@ -165,7 +172,7 @@ function FooterComponent({
             <div className="volume-controls">
                 <button className="control-btn" onClick={toggleMute}>
                     <span className="material-symbols-rounded">
-                        {isMuted || volume === 0 ? 'volume_off' : volume < 0. ? 'volume_down' : 'volume_up'}
+                        {isMuted || volume === 0 ? 'volume_off' : volume < 0.5 ? 'volume_down' : 'volume_up'}
                     </span>
                 </button>
 

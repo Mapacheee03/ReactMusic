@@ -28,6 +28,10 @@ body {
     top: 0;
     padding-bottom: 80px;
     overflow-y: auto;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .nav-section:last-child {

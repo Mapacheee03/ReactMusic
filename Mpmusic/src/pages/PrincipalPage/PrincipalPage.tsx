@@ -4,47 +4,63 @@ import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import { ApiMusica } from '../../services/api';
 import { Link } from 'react-router-dom';
-import type { Cancion, AlbumResumen } from '../../services/api';
+import type { Cancion, AlbumCompleto } from '../../services/api';
+
+const BASE_URL = 'https://api-musica.netlify.app/';
+
+function buildImageUrl(path?: string) {
+    if (!path || path.trim() === '') return '';
+    const safePath = path.startsWith('/') ? path.slice(1) : path;
+    const encodedPath = safePath
+        .split('/')
+        .map(segment => encodeURIComponent(segment).replace(/'/g, '%27'))
+        .join('/');
+    return `${BASE_URL}${encodedPath}`;
+}
 
 function PrincipalPage() {
     const [canciones, setCanciones] = useState<Cancion[]>([]);
-    const [albumes, setAlbumes] = useState<AlbumResumen[]>([]);
+    const [albumes, setAlbumes] = useState<AlbumCompleto[]>([]);
     const [cancionActual, setCancionActual] = useState<Cancion | undefined>(undefined);
     const [indiceActual, setIndiceActual] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement>(null);
 
-    // Estado para el carrusel hero
     const [indiceHero, setIndiceHero] = useState<number>(0);
+    const [fade, setFade] = useState<boolean>(true);
 
     useEffect(() => {
         ApiMusica.getCanciones()
             .then(data => {
                 const cancionesConAudio = data.map(c => ({
                     ...c,
-                    audioUrl: '' // reemplaza con URL real cuando tengas
+                    audioUrl: '', // Pon aquí la URL real si la tienes
                 }));
                 setCanciones(cancionesConAudio);
             })
             .catch(console.error);
 
-        ApiMusica.getAlbumesResumen()
+        ApiMusica.getAlbumes()
             .then(setAlbumes)
             .catch(console.error);
     }, []);
 
-    // Cambio automático del hero cada 5 segundos
+    // Manejo del carrusel con fade in/out cada 5s
     useEffect(() => {
         if (albumes.length === 0) return;
 
         const intervalo = setInterval(() => {
-            setIndiceHero(prev => (prev + 1) % albumes.length);
-        }, 5000); // 5000 ms = 5 segundos
+            setFade(false); // inicia fade out
+
+            setTimeout(() => {
+                setIndiceHero(prev => (prev + 1) % albumes.length);
+                setFade(true); // fade in
+            }, 600); // duración del fade out (un poco más que el CSS 0.6s)
+        }, 5000);
 
         return () => clearInterval(intervalo);
     }, [albumes]);
 
-    // Reproducir canción por índice
     const reproducirCancion = (index: number) => {
         const cancion = canciones[index];
         if (!cancion) return;
@@ -95,33 +111,70 @@ function PrincipalPage() {
             audio.removeEventListener('pause', handlePause);
             audio.removeEventListener('ended', handleEnded);
         };
-    }, [onNext]);
+    }, [indiceActual, canciones]);
 
-    // Obtenemos el álbum actual para el hero
     const albumHero = albumes[indiceHero];
 
     return (
         <div className={styles.container}>
             <SideBarComponent />
-            <div className={styles.mainContent}>
+            <div
+                className={styles.mainContent}
+             
+            >
                 <div className={styles.heroSection}>
                     {albumHero ? (
-                        <div className={styles.newRelease}
+                        <div
+                            className={styles.newRelease}
                             style={{
-                                backgroundImage: albumHero.portada
-                                    ? `url(${albumHero.portada})`
-                                    : ` url('/src/assets/Frame 1.png')`,
+                                minHeight: '300px',
+                                borderRadius: '8px',
+                                opacity: fade ? 1 : 0,
+                                transition: 'opacity 0.6s ease-in-out',
+                                position: 'relative',
                             }}
-                       >
-                            <div className={styles.newReleaseLabel}>New Releases!</div>
-                            <div className={styles.heroContainer}>
-                                <div className={styles.heroText}>
+                        >
+                            <img
+                                src={buildImageUrl(albumHero.portada)}
+                                alt={albumHero.titulo}
+                                style={{
+                                    width: '100%',
+                                    height: '300px',
+                                    objectFit: 'cover',
+                                    borderRadius: '8px',
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    zIndex: 0,
+                                    opacity: fade ? 1 : 0,
+                                    transition: 'opacity 0.6s ease-in-out',
+                                }}
+                            />
+
+                            <div
+                                className={styles.newReleaseLabel}
+                                style={{ position: 'relative', zIndex: 1 }}
+                            >
+                                New Releases!
+                            </div>
+                            <div
+                                className={styles.heroContainer}
+                                style={{ position: 'relative', zIndex: 1 }}
+                            >
+                                <div
+                                    className={styles.heroText}
+                                    style={{
+                                        opacity: fade ? 1 : 0,
+                                        transition: 'opacity 0.6s ease-in-out',
+                                    }}
+                                >
                                     <h2>{albumHero.titulo}</h2>
                                     <button
                                         className={styles.playButton}
                                         onClick={() => {
-                                            // Buscar canción del álbum para reproducir
-                                            const indiceCancion = canciones.findIndex(c => c.albumCompleto?.id === albumHero.id);
+                                            const indiceCancion = canciones.findIndex(
+                                                c => c.albumCompleto?.id === albumHero.id
+                                            );
                                             if (indiceCancion !== -1) reproducirCancion(indiceCancion);
                                         }}
                                     >
@@ -134,23 +187,24 @@ function PrincipalPage() {
                         <div>Cargando álbumes...</div>
                     )}
 
-                    {/* Resto de secciones (Albums Recientes, Música) sin cambios */}
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Albums Recientes</h3>
                         <div className={styles.albumsGrid}>
                             {albumes.map(album => (
-                                <Link key={album.id} to={`/album/${album.id}`} className={styles.albumCard}>
-                                    <div
-                                        className={styles.albumCover}
-                                        style={album.portada && album.portada.length < 0
-                                            ? { backgroundImage: `url(${album.portada})` }
-                                            : {}}
-                                    ></div>
+                                <Link
+                                    key={album.id}
+                                    to={`/album/${album.id}`}
+                                    className={styles.albumCard}
+                                >
+                                    <img
+                                        src={buildImageUrl(album.portada)}
+                                        alt={album.titulo}
+                                        style={{ width: '100%', height: 'auto', borderRadius: 4 }}
+                                    />
                                     <div className={styles.albumInfo}>
                                         <h3>{album.titulo}</h3>
-                                        <p>{album.artista} · {album.añoLanzamiento}</p>
-                                        <p>{album.numeroCanciones} canciones</p>
-                                        <p></p>
+                                        <p>{album.añoLanzamiento}</p>
+                                        <p>{album.numeroTracks} canciones</p>
                                         <p>- {album.sello} -</p>
                                     </div>
                                 </Link>
@@ -169,19 +223,27 @@ function PrincipalPage() {
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <span className={styles.trackNumber}>{index + 1}</span>
-                                    <div
-                                        className={styles.trackCover}
-                                        style={cancion.albumCompleto?.imagen
-                                            ? { backgroundImage: `url(${cancion.albumCompleto.imagen})` }
-                                            : {}}
-                                    ></div>
+                                    <img
+                                        src={buildImageUrl(cancion.albumCompleto?.portada)}
+                                        alt={cancion.artistaCompleto.nombre}
+                                        style={{
+                                            width: 60,
+                                            height: 60,
+                                            objectFit: 'cover',
+                                            borderRadius: 4,
+                                        }}
+                                    />
                                     <div className={styles.trackInfo}>
                                         <div className={styles.trackName}>{cancion.titulo}</div>
-                                        <div className={styles.trackArtist}>{cancion.artistaCompleto.nombre}</div>
+                                        <div className={styles.trackArtist}>
+                                            {cancion.artistaCompleto.nombre}
+                                        </div>
                                     </div>
                                     <div className={styles.trackActions}>
                                         <i className="fas fa-play"></i>
-                                        <span className={styles.trackDuration}>{cancion.duracion}</span>
+                                        <span className={styles.trackDuration}>
+                                            {cancion.duracion}
+                                        </span>
                                     </div>
                                 </li>
                             ))}

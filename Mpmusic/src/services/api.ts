@@ -7,21 +7,7 @@ export interface Artista {
     nacionalidad: string;
     genero: string;
     imagen: string;
-    biografia:string;
-}
-
-export interface AlbumCompleto {
-    id: number;
-    titulo: string;
-    artistaId: number;
-    añoLanzamiento: number;
-    genero: string;
-    duracionTotal: string;
-    numeroTracks: number;
-    imagen: string;
-    descripcion: string;
-    sello: string;
-    productor: string;
+    biografia: string;
 }
 
 export interface Cancion {
@@ -33,23 +19,26 @@ export interface Cancion {
     año: number;
     artistaCompleto: Artista;
     albumCompleto: AlbumCompleto;
-    audioUrl?: string;  // <-- aquí
-
+    audioUrl?: string;  // opcional
 }
 
-export interface AlbumResumen {
+export interface AlbumCompleto {
     id: number;
     titulo: string;
-    artista: string;
+    artistaId: number;
+    artistaNombre?: string;  // Puedes añadir nombre aquí para simplificar
     añoLanzamiento: number;
     genero: string;
+    duracionTotal: string;
+    numeroTracks: number;
     portada: string;
-    sello:string;
-    numeroCanciones: number;
-    infoCanciones: Cancion;
+    descripcion: string;
+    sello: string;
+    productor: string;
+    canciones: Cancion[];  // Lista de canciones en el álbum
 }
 
-// Método genérico
+// Método genérico para hacer fetch
 async function get<T>(endpoint: string): Promise<T> {
     try {
         const response = await fetch(`${BASE_URL}${endpoint}`);
@@ -66,31 +55,33 @@ async function get<T>(endpoint: string): Promise<T> {
 export const ApiMusica = {
     getCanciones: () => get<Cancion[]>('/api/canciones'),
     getArtistas: () => get<Artista[]>('/api/artistas'),
-    getAlbumes: () => get<AlbumCompleto[]>('/api/albumes'),
-    getGenero: () => get<string[]>('/api/generos'),
 
-    getAlbumesResumen: async (): Promise<AlbumResumen[]> => {
+    // Ahora la función obtiene los álbumes completos incluyendo las canciones agrupadas
+    getAlbumes: async (): Promise<AlbumCompleto[]> => {
+        // Obtén todas las canciones y artistas para construir los álbumes completos
         const canciones = await get<Cancion[]>('/api/canciones');
+        const artistas = await get<Artista[]>('/api/artistas');
 
-        const albumMap = new Map<number, AlbumResumen>();
+        // Map de álbumes para agrupar canciones
+        const albumMap = new Map<number, AlbumCompleto>();
 
         canciones.forEach(cancion => {
-            const albumId = cancion.albumCompleto.id;
-            if (!albumMap.has(albumId)) {
-                albumMap.set(albumId, {
-                    id: cancion.albumCompleto.id,
-                    titulo: cancion.albumCompleto.titulo,
-                    artista: cancion.artistaCompleto.nombre,
-                    añoLanzamiento: cancion.albumCompleto.añoLanzamiento,
-                    genero: cancion.albumCompleto.genero,
-                    portada: cancion.albumCompleto.imagen,
-                    sello: cancion.albumCompleto.sello,
-                    numeroCanciones: cancion.albumCompleto.numeroTracks,
-                    infoCanciones: cancion, 
+            const alb = cancion.albumCompleto;
+            if (!albumMap.has(alb.id)) {
+                // Busca nombre del artista
+                const artista = artistas.find(a => a.id === alb.artistaId);
+                albumMap.set(alb.id, {
+                    ...alb,
+                    artistaNombre: artista?.nombre || '',
+                    canciones: []
                 });
             }
+            albumMap.get(alb.id)!.canciones.push(cancion);
         });
 
+        // Finalmente retorna el arreglo de álbumes con canciones agrupadas
         return Array.from(albumMap.values());
-    }
+    },
+
+    getGenero: () => get<string[]>('/api/generos'),
 };

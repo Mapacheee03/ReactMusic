@@ -5,6 +5,15 @@ import styles from './ArtistasPages.module.css';
 import { ApiMusica } from '../../services/api';
 import type { Artista, Cancion } from '../../services/api';
 
+const BASE_URL = 'https://api-musica.netlify.app/';
+
+function buildImageUrl(path?: string) {
+    if (!path || path.trim() === '') return '';
+    const safePath = path.startsWith('/') ? path.slice(1) : path;
+    const encodedPath = safePath.split('/').map(encodeURIComponent).join('/');
+    return `${BASE_URL}${encodedPath}`;
+}
+
 function ArtistasPages() {
     const [artistas, setArtistas] = useState<Artista[]>([]);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -27,14 +36,14 @@ function ArtistasPages() {
             <SideBarComponent />
 
             <div className={styles.mainContent}>
-
                 <div className={styles.artistList}>
                     <h1 className={styles.h1}>Artistas</h1>
                     {artistas.map(artista => (
                         <div className={styles.artistItem} key={artista.id}>
                             <div className={styles.avatarContainer}>
                                 <img
-                                    src={artista.imagen}
+                                    src={buildImageUrl(artista.imagen)}
+                                    alt={artista.nombre}
                                     className={styles.avatar}
                                 />
                             </div>
