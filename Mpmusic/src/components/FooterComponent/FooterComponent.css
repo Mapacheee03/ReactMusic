@@ -1,185 +1,158 @@
-/* ========== PLAYER BAR GENERAL ========== */
+/* FOOTER GENERAL */
 footer.player-bar {
-    background: linear-gradient(57deg, #070020, #000000);
-    padding: 15px 20px;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    /* izquierda (info), centro (controles), derecha (volumen) */
-    align-items: center;
-    border-top: 1px solid #333;
-    color: white;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 100;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+  background: linear-gradient(57deg, #070020, #000000);
+  padding: 10px 15px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #333;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 200;
+  gap: 10px;
+
 }
 
-/* ========== NOW PLAYING INFO (IZQUIERDA) ========== */
+/* NOW PLAYING INFO */
 .now-playing {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 200px;
+  min-width: 180px;
 }
 
-.now-playing-cover {
-    width: 50px;
-    height: 50px;
-    background: gray;
-    border-radius: 4px;
-}
-
-.now-playing-info h4 {
-    margin: 0;
-    font-size: 14px;
-}
-
+.now-playing-info h4,
 .now-playing-info p {
-    margin: 0;
-    font-size: 12px;
-    color: #aaa;
+  margin: 0;
+  font-size: 13px;
+  color: #ccc;
 }
 
-/* ========== PLAYER CONTROLS (CENTRO) ========== */
-.player-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-    /* espacio entre controles y volumen */
-    grid-column: 2;
-    /* asegura que esté al centro */
-}
-
+/* PLAYER CONTROLS */
 .player-controls {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: center;
+  flex: 1 1 200px;
 }
 
 .control-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-.control-btn:hover {
-    color: white;
-}
-
-.control-btn.play {
-    background: white;
-    color: black;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-}
-
-/* ========== VOLUME CONTROLS (DERECHA) ========== */
+/* VOLUME */
 .volume-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  flex: 1 1 150px;
 }
 
 .volume-slider {
-    width: 80px;
-    height: 4px;
-    background-color: #555;
-    border-radius: 5px;
-    appearance: none;
-    cursor: pointer;
-    outline: none;
+  width: 80px;
+  height: 4px;
+  border-radius: 5px;
+  background-color: #555;
+  appearance: none;
+  cursor: pointer;
 }
 
-.volume-slider::-webkit-slider-thumb {
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    background: #1db954;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
+.volume-slider::-webkit-slider-thumb,
 .volume-slider::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
-    background: #1db954;
-    border-radius: 50%;
-    cursor: pointer;
+  width: 12px;
+  height: 12px;
+  background: #1db954;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
-.volume-progress {
-    width: 50%;
-    /* inicial */
-    height: 100%;
-    background-color: #1db954;
-}
-
-/* ========== SONG PROGRESS BAR (INFERIOR) ========== */
+/* PROGRESS BAR */
 .song-progress-bar {
-    grid-column: span 3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10px;
-    gap: 10px;
-    font-size: 12px;
-    color: white;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 12px;
+  justify-content: center;
+  color: white;
 }
 
 .progress-container {
-    position: relative;
-    flex: 1;
-    height: 6px;
-    background: #444;
-    border-radius: 4px;
-    cursor: pointer;
+  position: relative;
+  flex: 1;
+  height: 6px;
+  background: #444;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .song-progress {
-    height: 100%;
-    background: #1db954;
-    width: 0%;
-    transition: width 0.2s ease;
-    border-radius: 4px;
-    z-index: 1;
-    position: relative;
+  height: 100%;
+  background: #1db954;
+  width: 0%;
+  transition: width 0.2s ease;
+  border-radius: 4px;
 }
 
-/* Bola de progreso (draggable thumb) */
 .progress-thumb {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 14px;
-    height: 14px;
-    background-color: #1db954;
-    border: 2px solid #1db954;
-    border-radius: 50%;
-    cursor: grab;
-    z-index: 2;
-    transition: background-color 0.2s, transform 0.2s;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background-color: #1db954;
+  border-radius: 50%;
+  cursor: grab;
+  z-index: 2;
 }
 
 .progress-thumb:hover {
-    background-color: #1db954;
-    transform: translate(-50%, -50%) scale(1.1);
+  transform: translate(-50%, -50%) scale(1.2);
 }
 
 .time {
-    font-size: 12px;
-    color: #aaa;
-    width: 35px;
-    text-align: center;
+  width: 35px;
+  text-align: center;
+  color: #aaa;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  footer.player-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .now-playing{
+    justify-content: flex-start;
+    flex: 1 ;
+  }
+  .player-controls{
+    justify-content: center;
+    flex: 1 1 auto;
+  }
+  .volume-controls {
+    display: none;
+  }
+
+  .volume-slider {
+    width: 100px;
+  }
+
+  .song-progress-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }

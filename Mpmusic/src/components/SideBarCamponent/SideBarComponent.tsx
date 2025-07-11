@@ -1,49 +1,46 @@
-import './SideBarComponent.css';
+import  { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiMusica } from '../../services/api';
-import { useEffect, useState } from 'react';
+import styles from './SideBarComponent.module.css';
 
-function SideBarComponent() {
+interface SideBarProps {
+  showSidebar: boolean;
+  onCloseSidebar: () => void;
+}
+
+function SideBarComponent({ showSidebar, onCloseSidebar }: SideBarProps) {
   const [generos, setGeneros] = useState<string[]>([]);
 
- useEffect(() => {
-  const fetchGeneros = async () => {
-    try {
-      const response = await ApiMusica.getGenero(); // devuelve string[]
-      setGeneros(response); // directo
-    } catch (error) {
-      console.error('Error al obtener géneros:', error);
-    }
+  useEffect(() => {
+    ApiMusica.getGenero()
+      .then(setGeneros)
+      .catch(console.error);
+  }, []);
+
+  const handleClickLink = () => {
+    if (showSidebar) onCloseSidebar();
   };
 
-  fetchGeneros();
-}, []);
   return (
-    <div className="sidebar">
-      <div className="nav-section">
-        <div className="logo">
-          <h1>MP Music</h1>
-        </div>
-
-        <Link to="/" className="nav-item">
+    <div className={`${styles.sidebar} ${showSidebar ? styles.show : styles.hidden}`}>
+      <div className={styles.navSection}>
+  
+        <Link to="/" className={styles.navItem} onClick={handleClickLink}>
           <span className="material-symbols-outlined">home</span> Principal
         </Link>
-        <Link to="/explorar" className="nav-item">
+        {/* <Link to="/explorar" className={styles.navItem} onClick={handleClickLink}>
           <span className="material-symbols-outlined">explore</span> Explorar
-        </Link>
-        <Link to="/artistas" className="nav-item">
+        </Link> */}
+        <Link to="/artistas" className={styles.navItem} onClick={handleClickLink}>
           <span className="material-symbols-outlined">artist</span> Artistas
         </Link>
-        {/* <Link to="/nueva-playlist" className="nav-item">
-          <span className="material-symbols-outlined">add</span> Nueva Playlist
-        </Link> */}
 
-        <div className="nav-title">Your Top Genres</div>
-        <div className="genre-tags sidebar-tags">
+        <div className={styles.navTitle}>Your Top Genres</div>
+        <div className={styles.genreTags}>
           {generos.map((genero, index) => (
             <span
               key={index}
-              className={`genre-tag ${genero.toLowerCase().replace(/\s/g, '-')}`}
+              className={`${styles.genreTag} ${styles[genero.toLowerCase().replace(/\s/g, '-') || 'others']}`}
             >
               {genero}
             </span>
