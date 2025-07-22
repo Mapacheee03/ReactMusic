@@ -3,22 +3,17 @@
   height: 100vh;
   overflow: hidden;
   padding-top: 60px;
-
 }
 
 .mainContent {
   flex: 1;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
   color: white;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  overflow: hidden;
-  margin-left:210px;
-
-
+  overflow-y: auto;
+  margin-bottom: 60px;
 }
 
 .albumSection {
@@ -39,12 +34,21 @@
 .albumCover {
   width: 30%;
   min-width: 180px;
-  height: auto;
-  aspect-ratio: 1/1;
-  background-size: cover;
+  aspect-ratio: 1 / 1;
   background: linear-gradient(50deg, #070020, #000000);
   border-radius: 8px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.albumImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .albumDetails {
@@ -82,7 +86,6 @@
   color: #aaa;
 }
 
-/* Track List */
 .trackList {
   margin-top: 32px;
 }
@@ -94,22 +97,11 @@
   padding: 8px 16px;
   border-radius: 6px;
   transition: background 0.2s ease;
+  cursor: pointer;
 }
 
 .trackItem:hover {
   background: #1f2937;
-}
-
-.trackPlayBtn {
-  display: none;
-}
-
-.trackItem:hover .trackNumber span {
-  display: none;
-}
-
-.trackItem:hover .trackPlayBtn {
-  display: block;
 }
 
 .trackInfo h3 {
@@ -128,10 +120,59 @@
   font-size: 14px;
 }
 
-/* 📱 MEDIA QUERIES PARA RESPONSIVIDAD */
+/* Skeleton */
+.albumCoverSkeleton,
+.artistBadgeSkeleton,
+.albumTitleSkeleton,
+.albumMetaSkeleton,
+.trackItemSkeleton {
+  background-color: #333;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.albumCoverSkeleton {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+}
+
+.artistBadgeSkeleton {
+  width: 120px;
+  height: 20px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.albumTitleSkeleton {
+  width: 300px;
+  height: 48px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.albumMetaSkeleton {
+  width: 200px;
+  height: 18px;
+  border-radius: 8px;
+}
+
+.trackItemSkeleton {
+  height: 48px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+
+
+/* Responsive */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+  }
+
+  .mainContent {
+    margin-left: 0;
   }
 
   .albumHeader {
@@ -142,12 +183,16 @@
 
   .albumCover {
     width: 100%;
-    height: auto;
-    aspect-ratio: 1/1;
+    min-width: unset;
   }
 
   .albumTitle {
     font-size: 40px;
+  }
+
+  .albumSection {
+    padding: 20px;
+    padding-bottom: 100px;
   }
 
   .trackItem {
@@ -167,68 +212,7 @@
   .trackDuration {
     font-size: 12px;
   }
-
-  .albumSection {
-    padding: 20px;
-    padding-bottom: 100px;
-  }
 }
-.albumHeaderSkeleton {
-  display: flex;
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.albumCoverSkeleton {
-  width: 30%;
-  aspect-ratio: 1/1;
-  background: #333;
-  border-radius: 8px;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-.albumDetailsSkeleton {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  justify-content: flex-end;
-}
-
-.trackItemSkeleton {
-  display: grid;
-  grid-template-columns: 48px 1fr 96px;
-  gap: 16px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  background-color: #1a1a1a;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-.trackNumberSkeleton,
-.trackDurationSkeleton {
-  width: 32px;
-  height: 16px;
-  background-color: #333;
-  border-radius: 4px;
-}
-
-.trackInfoSkeleton .textLineSkeleton,
-.textLineSkeleton {
-  width: 70%;
-  height: 14px;
-  background-color: #333;
-  margin-bottom: 6px;
-  border-radius: 4px;
-}
-
-.textLineSkeletonShort {
-  width: 40%;
-  height: 12px;
-  background-color: #333;
-  border-radius: 4px;
-}
-
 
 @media (max-width: 480px) {
   .albumTitle {

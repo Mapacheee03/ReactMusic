@@ -258,7 +258,7 @@ function PrincipalPage() {
                     </div>
 
                     <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>MUSIC</h3>
+                        <h3 className={styles.sectionTitle}>MUSICA</h3>
                         {canciones.length > 0 ? (
                             <ul className={styles.trackList}>
                                 {canciones.map((cancion, index) => (

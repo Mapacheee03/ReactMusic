@@ -49,6 +49,15 @@
 .avatarContainer {
   flex-shrink: 0;
 }
+/* En ArtistasPages.module.css */
+.link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: underline;
+}
 
 .avatar {
   width: 90px;

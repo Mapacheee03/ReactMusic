@@ -12,6 +12,8 @@
     color: white;
     user-select: none;
     justify-content: space-between;
+    border-bottom: 1px solid #333;
+
 }
 
 .navbarLeft {
@@ -64,21 +66,25 @@
 }
 
 .resultados {
-  position: absolute;
-  top: 110%;
-  left: 20%; /* puedes cambiar a right: 0; o left: 50% + transform para centrar */
-  min-width: 250px; /* ancho mínimo */
-  max-width: 350px; /* máximo ancho */
-  background: #1b1b1b;
-  z-index: 9999;
-  list-style: none;
-  margin: 0;
-  padding: 8px 0;
-  border: 1px solid #333;
-  border-radius: 8px;
-  max-height: 200px;
-  overflow-y: auto;
+    position: absolute;
+    top: 110%;
+    left: 20%;
+    /* puedes cambiar a right: 0; o left: 50% + transform para centrar */
+    min-width: 250px;
+    /* ancho mínimo */
+    max-width: 350px;
+    /* máximo ancho */
+    background: #1b1b1b;
+    z-index: 9999;
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    border: 1px solid #333;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
 }
+
 .resultados li {
     padding: 10px 20px;
     color: #fff;

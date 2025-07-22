@@ -9,48 +9,43 @@ interface NavbarProps {
 }
 
 const NavbarComponent: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // ✅ Añadido
+  const [searchTerm, setSearchTerm] = useState('');
   const [resultados, setResultados] = useState<(Cancion | AlbumCompleto)[]>([]);
+  const [canciones, setCanciones] = useState<Cancion[]>([]);
+  const [albumes, setAlbumes] = useState<AlbumCompleto[]>([]);
 
-  const handleToggle = () => {
-    setMenuOpen(prev => !prev);
-    onToggleSidebar();
-  };
+  const handleToggle = () => onToggleSidebar();
+
+  // ✅ Carga datos solo una vez
+  useEffect(() => {
+    ApiMusica.getCanciones().then(setCanciones);
+    ApiMusica.getAlbumes().then(setAlbumes);
+  }, []);
 
   useEffect(() => {
-    if (searchTerm.length === 0) {
+    if (!searchTerm) {
       setResultados([]);
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const [canciones, albumes] = await Promise.all([
-          ApiMusica.getCanciones(),
-          ApiMusica.getAlbumes()
-        ]);
+    const term = searchTerm.toLowerCase();
 
-        const term = searchTerm.toLowerCase();
+    const cancionesFiltradas = canciones.filter(c =>
+      c.titulo.toLowerCase().includes(term)
+    );
 
-        const resultadosFiltrados = [
-          ...canciones.filter(c =>
-            c.titulo.toLowerCase().includes(term)
-          ),
-          ...albumes.filter(a =>
-            a.titulo.toLowerCase().includes(term)
-          )
-        ];
+    const albumesFiltrados = albumes.filter(a =>
+      a.titulo.toLowerCase().includes(term)
+    );
 
-        setResultados(resultadosFiltrados);
-      } catch (error) {
-        console.error('Error al buscar:', error);
-      }
-    };
+    const resultadosFiltrados = [...cancionesFiltradas, ...albumesFiltrados].slice(0, 7); // ✅ Limita resultados
 
-    const delay = setTimeout(fetchData, 300); // debounce básico
+    const delay = setTimeout(() => {
+      setResultados(resultadosFiltrados);
+    }, 150); // ✅ Debounce más rápido
+
     return () => clearTimeout(delay);
-  }, [searchTerm]);
+  }, [searchTerm, canciones, albumes]);
 
   return (
     <nav className={styles.navbar}>
@@ -60,9 +55,7 @@ const NavbarComponent: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           onClick={handleToggle}
           aria-label="Toggle menu"
         >
-          <span className="material-symbols-outlined">
-            {menuOpen ? 'menu' : 'close'}
-          </span>
+          <span className="material-symbols-outlined">menu</span>
         </button>
         <h1 className={styles.logo}>MP Music</h1>
       </div>
@@ -79,9 +72,13 @@ const NavbarComponent: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             {resultados.map((item, index) => (
               <li key={index}>
                 {'artista' in item ? (
-                  <Link to={`/cancion/${item.id}`}>{item.titulo} - {item.artista}</Link>
+                  <Link to={`/cancion/${item.id}`}>
+                    {item.titulo} - {item.artista}
+                  </Link>
                 ) : (
-                  <Link to={`/album/${item.id}`}>{item.titulo} (Álbum)</Link>
+                  <Link to={`/album/${item.id}`}>
+                    {item.titulo} (Álbum)
+                  </Link>
                 )}
               </li>
             ))}

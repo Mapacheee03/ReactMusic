@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom'; // 👉 IMPORTANTE
 import NavbarComponent from '../../components/NavBarComponent/NavbarComponent';
-import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent'; import FooterComponent from '../../components/FooterComponent/FooterComponent';
+import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
+import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import styles from './ArtistasPages.module.css';
 import { ApiMusica } from '../../services/api';
 import type { Artista, Cancion } from '../../services/api';
@@ -26,30 +28,26 @@ function ArtistasPages() {
             .then(setArtistas)
             .catch(error => console.error('Error al cargar artistas:', error));
     }, []);
+
     useEffect(() => {
         const checkIfMobile = () => {
             const mobile = window.innerWidth <= 768;
             setIsMobile(mobile);
-            if (!mobile) {
-                setShowSidebar(true); // Mostrar sidebar en escritorio
-            } else {
-                setShowSidebar(false); // Ocultar sidebar en móvil al cargar
-            }
+            setShowSidebar(!mobile); // Mostrar u ocultar sidebar
         };
 
         checkIfMobile();
         window.addEventListener('resize', checkIfMobile);
         return () => window.removeEventListener('resize', checkIfMobile);
     }, []);
-    // Simulación de control
+
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
     const handleNext = () => console.log('Siguiente canción');
     const handlePrev = () => console.log('Canción anterior');
     const toggleSidebar = () => setShowSidebar(prev => !prev);
-    const closeSidebar = () => {
-        if (isMobile) setShowSidebar(false);
-    };
+    const closeSidebar = () => { if (isMobile) setShowSidebar(false); };
+
     return (
         <div className={styles.container}>
             <NavbarComponent onToggleSidebar={toggleSidebar} />
@@ -68,7 +66,12 @@ function ArtistasPages() {
                                 />
                             </div>
                             <div className={styles.artistInfo}>
-                                <h3 className={styles.artistName}>{artista.nombre}</h3>
+                                <h3 className={styles.artistName}>
+                                    {/* 👇 Enlace al detalle del artista */}
+                                    <Link to={`/artista/${artista.id}`} className={styles.link}>
+                                        {artista.nombre}
+                                    </Link>
+                                </h3>
                                 <p className={styles.songCount}>
                                     {artista.genero} – {artista.nacionalidad}
                                 </p>

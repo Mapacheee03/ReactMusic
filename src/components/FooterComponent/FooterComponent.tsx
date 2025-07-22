@@ -1,6 +1,7 @@
 import './FooterComponent.css';
 import type { Cancion } from '../../services/api';
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom'; // ✅ Agrega esta línea
 
 interface FooterProps {
     cancionActual?: Cancion;
@@ -135,17 +136,20 @@ function FooterComponent({
     return (
         <footer className="player-bar">
             <div className="now-playing">
-                <div
-                    className="now-playing-cover"
-                    style={{
-                        backgroundImage: `url(${buildImageUrl(cancionActual?.albumCompleto.portada)})`,
-                        backgroundSize: 'cover',
-                        width: '60px',
-                        height: '60px',
-                        borderRadius: '6px',
-                        marginRight: '15px',
-                    }}
-                />
+                <Link to={cancionActual ? `/cancion/${cancionActual.id}` : '#'} style={{ textDecoration: 'none' }}>
+                    <div
+                        className="now-playing-cover"
+                        style={{
+                            backgroundImage: `url(${buildImageUrl(cancionActual?.albumCompleto.portada)})`,
+                            backgroundSize: 'cover',
+                            width: '60px',
+                            height: '60px',
+                            borderRadius: '6px',
+                            marginRight: '15px',
+                            cursor: 'pointer',
+                        }}
+                    />
+                </Link>
                 <div className="now-playing-info">
                     <h4>{cancionActual?.titulo || 'Nada reproduciendo'}</h4>
                     <p>{cancionActual?.artistaCompleto.nombre || ''}</p>
