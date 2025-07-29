@@ -12,8 +12,18 @@ function SideBarComponent({ showSidebar, onCloseSidebar }: SideBarProps) {
   const [generos, setGeneros] = useState<string[]>([]);
 
   useEffect(() => {
-    ApiMusica.getGenero()
-      .then(setGeneros)
+    ApiMusica.getAlbumes()
+      .then(albumes => {
+        // Extraer géneros únicos desde álbumes
+        const generosUnicos = Array.from(
+          new Set(
+            albumes
+              .map(a => a.genero?.trim())
+              .filter((g): g is string => !!g) // filtrar no nulos
+          )
+        );
+        setGeneros(generosUnicos);
+      })
       .catch(console.error);
   }, []);
 
@@ -24,7 +34,6 @@ function SideBarComponent({ showSidebar, onCloseSidebar }: SideBarProps) {
   return (
     <div className={`${styles.sidebar} ${showSidebar ? styles.show : styles.hidden}`}>
       <div className={styles.navSection}>
-
         <Link to="/" className={styles.navItem} onClick={handleClickLink}>
           <span className="material-symbols-outlined">home</span> Principal
         </Link>
@@ -35,10 +44,10 @@ function SideBarComponent({ showSidebar, onCloseSidebar }: SideBarProps) {
           <span className="material-symbols-outlined">artist</span> Artistas
         </Link>
         <div className={styles.separator}></div>
-        <Link to="/playlists" className={styles.playlistButton} onClick={handleClickLink}>
+        {/* <Link to="/playlists" className={styles.playlistButton} onClick={handleClickLink}>
           <span className="material-symbols-outlined">queue_music</span>
           Playlists
-        </Link>
+        </Link> */}
 
         <div className={styles.navTitle}>Your Top Genres</div>
         <div className={styles.genreTags}>

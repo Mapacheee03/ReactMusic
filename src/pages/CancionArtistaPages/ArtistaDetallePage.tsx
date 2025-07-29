@@ -7,7 +7,7 @@ import { ApiMusica } from '../../services/api';
 import type { Artista, Cancion } from '../../services/api';
 import styles from './ArtistaDetallePage.module.css';
 
-const BASE_URL = 'https://api-musica.netlify.app/';
+const BASE_URL = 'http://localhost:3001/';
 
 function buildImageUrl(path?: string) {
   if (!path || path.trim() === '') return '';
@@ -35,7 +35,8 @@ const ArtistaDetallePage = () => {
         .then(([artistasData, cancionesData]) => {
           const found = artistasData.find(a => a.id === Number(id));
           setArtista(found || null);
-          const filtradas = cancionesData.filter(c => c.artistaCompleto?.id === Number(id));
+          // Filtrar canciones donde cancion.artista.id coincida con id
+          const filtradas = cancionesData.filter(c => c.artista?.id === Number(id));
           setCanciones(filtradas);
           if (filtradas.length > 0) {
             setCancionActual(filtradas[0]);
@@ -144,7 +145,8 @@ const ArtistaDetallePage = () => {
                     </div>
                     <div className={styles.trackInfo}>
                       <h3>{cancion.titulo}</h3>
-                      <p>{cancion.album}</p>
+                      {/* Mostrar título del álbum */}
+                      <p>{cancion.album?.titulo}</p>
                     </div>
                     <div className={styles.trackDuration}>{cancion.duracion}</div>
                   </div>
@@ -161,6 +163,8 @@ const ArtistaDetallePage = () => {
         onPrev={onPrev}
         isPlaying={isPlaying}
       />
+
+      <audio ref={audioRef} src={cancionActual?.audioUrl || undefined} />
     </div>
   );
 };

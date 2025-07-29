@@ -2,12 +2,12 @@ import styles from './AlbumPage.module.css';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ApiMusica } from '../../services/api';
-import type { AlbumCompleto, Cancion } from '../../services/api';
+import type { Album, Cancion } from '../../services/api';
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import NavbarComponent from '../../components/NavBarComponent/NavbarComponent';
 import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
 
-const BASE_URL = 'https://api-musica.netlify.app/';
+const BASE_URL = 'http://localhost:3001/';
 
 function buildImageUrl(path?: string) {
     if (!path || path.trim() === '') return '';
@@ -21,7 +21,7 @@ function buildImageUrl(path?: string) {
 
 function AlbumPage() {
     const { albumId } = useParams();
-    const [album, setAlbum] = useState<AlbumCompleto | null>(null);
+    const [album, setAlbum] = useState<Album | null>(null);
     const [canciones, setCanciones] = useState<Cancion[]>([]);
     const [cancionActual, setCancionActual] = useState<Cancion | undefined>();
     const [indiceActual, setIndiceActual] = useState<number>(0);
@@ -43,12 +43,19 @@ function AlbumPage() {
                     const encontrado = albumes.find(a => a.id === parseInt(albumId));
                     setAlbum(encontrado || null);
 
-                    const filtradas = cancionesApi.filter(c => c.albumCompleto.id === parseInt(albumId));
+                    // Filtra canciones por album.id, no albumCompleto
+                    const filtradas = cancionesApi.filter(c => c.album?.id === parseInt(albumId));
+                    // Asegurar que audioUrl tenga algo, si no viene poner un placeholder o vacío
                     const cancionesConAudio = filtradas.map(c => ({
                         ...c,
-                        audioUrl: '', // Reemplazar con URL real si existe
+                        audioUrl: c.audioUrl || `https://cdn.example.com/audio/${c.id}.mp3`,
                     }));
                     setCanciones(cancionesConAudio);
+
+                    if (cancionesConAudio.length > 0) {
+                        setCancionActual(cancionesConAudio[0]);
+                        setIndiceActual(0);
+                    }
                 })
                 .finally(() => setIsLoading(false));
         }
@@ -67,6 +74,7 @@ function AlbumPage() {
 
     const reproducirCancion = (index: number) => {
         const cancion = canciones[index];
+        if (!cancion) return;
         setCancionActual(cancion);
         setIndiceActual(index);
         setTimeout(() => {
@@ -170,7 +178,8 @@ function AlbumPage() {
                                     </div>
                                     <div className={styles.trackInfo}>
                                         <h3>{cancion.titulo}</h3>
-                                        <p>{cancion.artistaCompleto.nombre}</p>
+                                        {/* Mostrar nombre del artista, no artistaCompleto */}
+                                        <p>{cancion.artista?.nombre}</p>
                                     </div>
                                     <div className={styles.trackDuration}>{cancion.duracion}</div>
                                 </div>

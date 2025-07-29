@@ -5,9 +5,9 @@ import NavbarComponent from '../../components/NavBarComponent/NavbarComponent';
 import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
 import { ApiMusica } from '../../services/api';
 import { Link } from 'react-router-dom';
-import type { Cancion, AlbumCompleto } from '../../services/api';
+import type { Cancion, Album } from '../../services/api';
 
-const BASE_URL = 'https://api-musica.netlify.app/';
+const BASE_URL = 'http://localhost:3001/';
 
 function buildImageUrl(path?: string) {
     if (!path || path.trim() === '') return null;
@@ -21,7 +21,7 @@ function buildImageUrl(path?: string) {
 
 function PrincipalPage() {
     const [canciones, setCanciones] = useState<Cancion[]>([]);
-    const [albumes, setAlbumes] = useState<AlbumCompleto[]>([]);
+    const [albumes, setAlbumes] = useState<Album[]>([]);
     const [cancionActual, setCancionActual] = useState<Cancion | undefined>(undefined);
     const [indiceActual, setIndiceActual] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -37,7 +37,6 @@ function PrincipalPage() {
     useEffect(() => {
         ApiMusica.getCanciones()
             .then(data => {
-                // Aquí ajustamos audioUrl, usa la que tengas real o pon ejemplo
                 const cancionesConAudio = data.map(c => ({
                     ...c,
                     audioUrl: c.audioUrl || `https://cdn.example.com/audio/${c.id}.mp3`,
@@ -55,11 +54,7 @@ function PrincipalPage() {
         const checkIfMobile = () => {
             const mobile = window.innerWidth <= 768;
             setIsMobile(mobile);
-            if (!mobile) {
-                setShowSidebar(true);
-            } else {
-                setShowSidebar(false);
-            }
+            setShowSidebar(!mobile);
         };
 
         checkIfMobile();
@@ -92,6 +87,7 @@ function PrincipalPage() {
             setIsPlaying(true);
         }, 100);
     };
+
     const onPlay = () => {
         audioRef.current?.play();
         setIsPlaying(true);
@@ -114,7 +110,7 @@ function PrincipalPage() {
         reproducirCancion(prevIndex);
     };
 
-     useEffect(() => {
+    useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
 
@@ -132,14 +128,13 @@ function PrincipalPage() {
             audio.removeEventListener('ended', handleEnded);
         };
     }, [indiceActual, canciones]);
+
     const albumHero = albumes[indiceHero];
 
-    // Sidebar toggles
     const toggleSidebar = () => setShowSidebar(prev => !prev);
     const closeSidebar = () => {
         if (isMobile) setShowSidebar(false);
     };
-
 
     return (
         <div className={styles.container}>
@@ -198,7 +193,7 @@ function PrincipalPage() {
                                         className={styles.playButton}
                                         onClick={() => {
                                             const indiceCancion = canciones.findIndex(
-                                                c => c.albumCompleto?.id === albumHero.id
+                                                c => c.album.id === albumHero.id
                                             );
                                             if (indiceCancion !== -1) reproducirCancion(indiceCancion);
                                         }}
@@ -270,8 +265,8 @@ function PrincipalPage() {
                                     >
                                         <span className={styles.trackNumber}>{index + 1}</span>
                                         <img
-                                            src={buildImageUrl(cancion.albumCompleto?.portada) || undefined}
-                                            alt={cancion.artistaCompleto.nombre}
+                                            src={buildImageUrl(cancion.album.portada) || undefined}
+                                            alt={cancion.artista.nombre}
                                             style={{
                                                 width: 60,
                                                 height: 60,
@@ -281,15 +276,11 @@ function PrincipalPage() {
                                         />
                                         <div className={styles.trackInfo}>
                                             <div className={styles.trackName}>{cancion.titulo}</div>
-                                            <div className={styles.trackArtist}>
-                                                {cancion.artistaCompleto.nombre}
-                                            </div>
+                                            <div className={styles.trackArtist}>{cancion.artista.nombre}</div>
                                         </div>
                                         <div className={styles.trackActions}>
                                             <i className="fas fa-play"></i>
-                                            <span className={styles.trackDuration}>
-                                                {cancion.duracion}
-                                            </span>
+                                            <span className={styles.trackDuration}>{cancion.duracion}</span>
                                         </div>
                                     </li>
                                 ))}

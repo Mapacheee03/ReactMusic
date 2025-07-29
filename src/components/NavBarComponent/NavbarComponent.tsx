@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './NavbarComponent.module.css';
 import { ApiMusica } from '../../services/api';
-import type { Cancion, AlbumCompleto } from '../../services/api';
+import type { Cancion, Album } from '../../services/api';
 import { Link } from 'react-router-dom';
 
 interface NavbarProps {
@@ -10,13 +10,12 @@ interface NavbarProps {
 
 const NavbarComponent: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [resultados, setResultados] = useState<(Cancion | AlbumCompleto)[]>([]);
+  const [resultados, setResultados] = useState<(Cancion | Album)[]>([]);
   const [canciones, setCanciones] = useState<Cancion[]>([]);
-  const [albumes, setAlbumes] = useState<AlbumCompleto[]>([]);
+  const [albumes, setAlbumes] = useState<Album[]>([]);
 
   const handleToggle = () => onToggleSidebar();
 
-  // ✅ Carga datos solo una vez
   useEffect(() => {
     ApiMusica.getCanciones().then(setCanciones);
     ApiMusica.getAlbumes().then(setAlbumes);
@@ -38,11 +37,11 @@ const NavbarComponent: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       a.titulo.toLowerCase().includes(term)
     );
 
-    const resultadosFiltrados = [...cancionesFiltradas, ...albumesFiltrados].slice(0, 7); // ✅ Limita resultados
+    const resultadosFiltrados = [...cancionesFiltradas, ...albumesFiltrados].slice(0, 7);
 
     const delay = setTimeout(() => {
       setResultados(resultadosFiltrados);
-    }, 150); // ✅ Debounce más rápido
+    }, 150);
 
     return () => clearTimeout(delay);
   }, [searchTerm, canciones, albumes]);
@@ -69,11 +68,11 @@ const NavbarComponent: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         />
         {searchTerm && resultados.length > 0 && (
           <ul className={styles.resultados}>
-            {resultados.map((item, index) => (
-              <li key={index}>
+            {resultados.map(item => (
+              <li key={item.id}>
                 {'artista' in item ? (
                   <Link to={`/cancion/${item.id}`}>
-                    {item.titulo} - {item.artista}
+                    {item.titulo} - {item.artista.nombre}
                   </Link>
                 ) : (
                   <Link to={`/album/${item.id}`}>

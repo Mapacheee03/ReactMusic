@@ -7,7 +7,7 @@ import styles from './ArtistasPages.module.css';
 import { ApiMusica } from '../../services/api';
 import type { Artista, Cancion } from '../../services/api';
 
-const BASE_URL = 'https://api-musica.netlify.app/';
+const BASE_URL = 'http://localhost:3001/';
 
 function buildImageUrl(path?: string) {
     if (!path || path.trim() === '') return '';

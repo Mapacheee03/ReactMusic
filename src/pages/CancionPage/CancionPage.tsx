@@ -9,7 +9,7 @@ import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import { FaArrowLeft } from 'react-icons/fa';
 
-const BASE_URL = 'https://api-musica.netlify.app/';
+const BASE_URL = 'http://localhost:3001/';
 
 function buildImageUrl(path?: string) {
   if (!path || path.trim() === '') return null;
@@ -93,8 +93,6 @@ const CancionPage = () => {
             transition: 'margin-left 0.3s ease-in-out',
           }}
         >
-        
-
           <section className={styles.songDetailCard}>
             <div className={styles.coverContainer}>
               <div className={styles.skeletonCover}></div>
@@ -140,16 +138,16 @@ const CancionPage = () => {
         <section className={styles.songDetailCard}>
           <div className={styles.coverContainer}>
             <img
-              src={buildImageUrl(cancion.albumCompleto.portada) || undefined}
-              alt={cancion.albumCompleto.titulo}
+              src={buildImageUrl(cancion.album?.portada) || undefined}
+              alt={cancion.album?.titulo}
               className={styles.coverImage}
             />
           </div>
 
           <div className={styles.songInfo}>
             <h1 className={styles.songTitle}>{cancion.titulo}</h1>
-            <h3 className={styles.artistName}>{cancion.artistaCompleto.nombre}</h3>
-            <h4 className={styles.albumName}>Álbum: {cancion.albumCompleto.titulo}</h4>
+            <h3 className={styles.artistName}>{cancion.artista?.nombre}</h3>
+            <h4 className={styles.albumName}>Álbum: {cancion.album?.titulo}</h4>
 
             <div className={styles.metadata}>
               <p><strong>Año:</strong> {cancion.año}</p>
