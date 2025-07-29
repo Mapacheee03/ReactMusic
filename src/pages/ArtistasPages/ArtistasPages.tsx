@@ -7,7 +7,7 @@ import styles from './ArtistasPages.module.css';
 import { ApiMusica } from '../../services/api';
 import type { Artista, Cancion } from '../../services/api';
 
-const BASE_URL = 'http://localhost:3001/';
+const BASE_URL = 'https://reactmusic-back.onrender.com/';
 
 function buildImageUrl(path?: string) {
     if (!path || path.trim() === '') return '';
@@ -57,6 +57,8 @@ function ArtistasPages() {
                 <div className={styles.artistList}>
                     <h1 className={styles.h1}>Artistas</h1>
                     {artistas.map(artista => (
+                                     <Link to={`/artista/${artista.id}`} className={styles.link}>
+
                         <div className={styles.artistItem} key={artista.id}>
                             <div className={styles.avatarContainer}>
                                 <img
@@ -68,9 +70,7 @@ function ArtistasPages() {
                             <div className={styles.artistInfo}>
                                 <h3 className={styles.artistName}>
                                     {/* 👇 Enlace al detalle del artista */}
-                                    <Link to={`/artista/${artista.id}`} className={styles.link}>
                                         {artista.nombre}
-                                    </Link>
                                 </h3>
                                 <p className={styles.songCount}>
                                     {artista.genero} – {artista.nacionalidad}
@@ -80,6 +80,8 @@ function ArtistasPages() {
                                 </p>
                             </div>
                         </div>
+                                    </Link>
+                        
                     ))}
                 </div>
             </div>

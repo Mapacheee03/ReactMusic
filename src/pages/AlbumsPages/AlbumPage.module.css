@@ -3,7 +3,7 @@
   height: 100vh;
   overflow: hidden;
   padding-top: 60px;
-
+  overflow-x: hidden;
 }
 
 .mainContent {
@@ -12,13 +12,8 @@
   flex-direction: column;
   color: white;
   user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   overflow: hidden;
-  margin-left:210px;
-
-
+  margin-left: 210px;
 }
 
 .albumSection {
@@ -128,10 +123,15 @@
   font-size: 14px;
 }
 
-/* 📱 MEDIA QUERIES PARA RESPONSIVIDAD */
+/* 📱 MEDIA QUERIES */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+  }
+
+  .mainContent {
+    margin-left: 0;
+    margin-bottom: 10svh;
   }
 
   .albumHeader {
@@ -143,7 +143,6 @@
   .albumCover {
     width: 100%;
     height: auto;
-    aspect-ratio: 1/1;
   }
 
   .albumTitle {
@@ -173,6 +172,27 @@
     padding-bottom: 100px;
   }
 }
+
+@media (max-width: 480px) {
+  .albumTitle {
+    font-size: 32px;
+  }
+
+  .trackItem {
+    grid-template-columns: 28px 1fr 50px;
+    padding: 6px 10px;
+  }
+
+  .trackInfo h3 {
+    font-size: 13px;
+  }
+
+  .trackInfo p {
+    font-size: 10px;
+  }
+}
+
+/* Skeletons */
 .albumHeaderSkeleton {
   display: flex;
   gap: 24px;
@@ -227,24 +247,4 @@
   height: 12px;
   background-color: #333;
   border-radius: 4px;
-}
-
-
-@media (max-width: 480px) {
-  .albumTitle {
-    font-size: 32px;
-  }
-
-  .trackItem {
-    grid-template-columns: 28px 1fr 50px;
-    padding: 6px 10px;
-  }
-
-  .trackInfo h3 {
-    font-size: 13px;
-  }
-
-  .trackInfo p {
-    font-size: 10px;
-  }
 }

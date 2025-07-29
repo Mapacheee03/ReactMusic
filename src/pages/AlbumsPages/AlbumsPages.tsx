@@ -7,7 +7,7 @@ import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import NavbarComponent from '../../components/NavBarComponent/NavbarComponent';
 import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
 
-const BASE_URL = 'http://localhost:3001/';
+const BASE_URL = 'https://reactmusic-back.onrender.com/';
 
 function buildImageUrl(path?: string) {
     if (!path || path.trim() === '') return '';
@@ -33,32 +33,41 @@ function AlbumPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (albumId) {
-            setIsLoading(true);
-            Promise.all([
-                ApiMusica.getAlbumes(),
-                ApiMusica.getCanciones()
-            ])
-                .then(([albumes, cancionesApi]) => {
-                    const encontrado = albumes.find(a => a.id === parseInt(albumId));
-                    setAlbum(encontrado || null);
+        if (!albumId) return;
 
-                    // Filtra canciones por album.id, no albumCompleto
-                    const filtradas = cancionesApi.filter(c => c.album?.id === parseInt(albumId));
-                    // Asegurar que audioUrl tenga algo, si no viene poner un placeholder o vacío
-                    const cancionesConAudio = filtradas.map(c => ({
+        setIsLoading(true);
+
+        const fetchData = async () => {
+            try {
+                const [albumes, cancionesApi] = await Promise.all([
+                    ApiMusica.getAlbumes(),
+                    ApiMusica.getCanciones()
+                ]);
+
+                const encontrado = albumes.find(a => a.id === parseInt(albumId));
+                setAlbum(encontrado || null);
+
+                const filtradas = cancionesApi
+                    .filter(c => c.album?.id === parseInt(albumId))
+                    .map(c => ({
                         ...c,
-                        audioUrl: c.audioUrl || `https://cdn.example.com/audio/${c.id}.mp3`,
+                    audioUrl: c.audioUrl || `https://reactmusic-back.onrender.com/audios/${c.id}.mp3`,
                     }));
-                    setCanciones(cancionesConAudio);
 
-                    if (cancionesConAudio.length > 0) {
-                        setCancionActual(cancionesConAudio[0]);
-                        setIndiceActual(0);
-                    }
-                })
-                .finally(() => setIsLoading(false));
-        }
+                setCanciones(filtradas);
+
+                if (filtradas.length > 0) {
+                    setCancionActual(filtradas[0]);
+                    setIndiceActual(0);
+                }
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
     }, [albumId]);
 
     useEffect(() => {
@@ -178,7 +187,6 @@ function AlbumPage() {
                                     </div>
                                     <div className={styles.trackInfo}>
                                         <h3>{cancion.titulo}</h3>
-                                        {/* Mostrar nombre del artista, no artistaCompleto */}
                                         <p>{cancion.artista?.nombre}</p>
                                     </div>
                                     <div className={styles.trackDuration}>{cancion.duracion}</div>

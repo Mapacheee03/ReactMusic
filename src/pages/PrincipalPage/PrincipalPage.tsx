@@ -7,7 +7,7 @@ import { ApiMusica } from '../../services/api';
 import { Link } from 'react-router-dom';
 import type { Cancion, Album } from '../../services/api';
 
-const BASE_URL = 'http://localhost:3001/';
+const BASE_URL = 'https://reactmusic-back.onrender.com/';
 
 function buildImageUrl(path?: string) {
     if (!path || path.trim() === '') return null;
@@ -39,7 +39,7 @@ function PrincipalPage() {
             .then(data => {
                 const cancionesConAudio = data.map(c => ({
                     ...c,
-                    audioUrl: c.audioUrl || `https://cdn.example.com/audio/${c.id}.mp3`,
+                    audioUrl: c.audioUrl || `https://reactmusic-back.onrender.com/audios/${c.id}.mp3`,
                 }));
                 setCanciones(cancionesConAudio);
             })

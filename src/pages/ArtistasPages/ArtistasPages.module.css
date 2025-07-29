@@ -55,9 +55,7 @@
   color: inherit;
   cursor: pointer;
 }
-.link:hover {
-  text-decoration: underline;
-}
+
 
 .avatar {
   width: 90px;

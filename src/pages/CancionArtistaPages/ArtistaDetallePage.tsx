@@ -7,7 +7,7 @@ import { ApiMusica } from '../../services/api';
 import type { Artista, Cancion } from '../../services/api';
 import styles from './ArtistaDetallePage.module.css';
 
-const BASE_URL = 'http://localhost:3001/';
+const BASE_URL = 'https://reactmusic-back.onrender.com/';
 
 function buildImageUrl(path?: string) {
   if (!path || path.trim() === '') return '';
@@ -29,22 +29,40 @@ const ArtistaDetallePage = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (id) {
+    if (!id) return;
+
+    const fetchData = async () => {
       setLoading(true);
-      Promise.all([ApiMusica.getArtistas(), ApiMusica.getCanciones()])
-        .then(([artistasData, cancionesData]) => {
-          const found = artistasData.find(a => a.id === Number(id));
-          setArtista(found || null);
-          // Filtrar canciones donde cancion.artista.id coincida con id
-          const filtradas = cancionesData.filter(c => c.artista?.id === Number(id));
-          setCanciones(filtradas);
-          if (filtradas.length > 0) {
-            setCancionActual(filtradas[0]);
-            setIndiceActual(0);
-          }
-        })
-        .finally(() => setLoading(false));
-    }
+      try {
+        const [artistasData, cancionesData] = await Promise.all([
+          ApiMusica.getArtistas(),
+          ApiMusica.getCanciones()
+        ]);
+
+        const found = artistasData.find(a => a.id === Number(id));
+        setArtista(found || null);
+
+        const filtradas = cancionesData
+          .filter(c => c.artista?.id === Number(id))
+          .map(c => ({
+            ...c,
+            audioUrl: c.audioUrl || `https://reactmusic-back.onrender.com/audios/${c.id}.mp3`,
+          }));
+
+        setCanciones(filtradas);
+
+        if (filtradas.length > 0) {
+          setCancionActual(filtradas[0]);
+          setIndiceActual(0);
+        }
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [id]);
 
   useEffect(() => {
@@ -145,7 +163,6 @@ const ArtistaDetallePage = () => {
                     </div>
                     <div className={styles.trackInfo}>
                       <h3>{cancion.titulo}</h3>
-                      {/* Mostrar título del álbum */}
                       <p>{cancion.album?.titulo}</p>
                     </div>
                     <div className={styles.trackDuration}>{cancion.duracion}</div>

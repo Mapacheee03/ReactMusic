@@ -12,7 +12,7 @@ interface FooterProps {
   isPlaying: boolean;
 }
 
-const BASE_URL = 'http://localhost:3001/'; // Cambia a tu URL base real
+const BASE_URL = 'https://reactmusic-back.onrender.com/';
 
 function buildImageUrl(path?: string) {
   if (!path || path.trim() === '') return '';

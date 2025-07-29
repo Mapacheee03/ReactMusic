@@ -9,7 +9,7 @@ import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import { FaArrowLeft } from 'react-icons/fa';
 
-const BASE_URL = 'http://localhost:3001/';
+const BASE_URL = 'https://reactmusic-back.onrender.com/';
 
 function buildImageUrl(path?: string) {
   if (!path || path.trim() === '') return null;
@@ -40,7 +40,17 @@ const CancionPage = () => {
       try {
         const canciones = await ApiMusica.getCanciones();
         const encontrada = canciones.find(c => c.id === Number(id));
-        setCancion(encontrada ?? null);
+
+        if (encontrada) {
+          // Asignar audioUrl si no tiene
+          const cancionConAudio: Cancion = {
+            ...encontrada,
+            audioUrl: encontrada.audioUrl || `https://reactmusic-back.onrender.com/audios/${encontrada.id}.mp3`,
+          };
+          setCancion(cancionConAudio);
+        } else {
+          setCancion(null);
+        }
       } catch (error) {
         console.error('Error al cargar la canción:', error);
       } finally {
