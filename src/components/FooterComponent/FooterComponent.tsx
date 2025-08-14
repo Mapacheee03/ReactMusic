@@ -1,16 +1,7 @@
-import './FooterComponent.css';
-import type { Cancion } from '../../services/api';
-import { useEffect, useRef, useState } from 'react';
+// src/components/FooterComponent/FooterComponent.tsx
+import { usePlayer } from '../../context/PlayerContext';
 import { Link } from 'react-router-dom';
-
-interface FooterProps {
-  cancionActual?: Cancion;
-  onPlay: () => void;
-  onPause: () => void;
-  onNext: () => void;
-  onPrev: () => void;
-  isPlaying: boolean;
-}
+import './FooterComponent.css';
 
 const BASE_URL = 'https://reactmusic-back.onrender.com/';
 
@@ -24,21 +15,20 @@ function buildImageUrl(path?: string) {
   return `${BASE_URL}${encodedPath}`;
 }
 
-function FooterComponent({
-  cancionActual,
-  onPlay,
-  onPause,
-  onNext,
-  onPrev,
-  isPlaying,
-}: FooterProps) {
-  const [currentTime, setCurrentTime] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [volume, setVolume] = useState(0.5);
-  const [isMuted, setIsMuted] = useState(false);
-
-  const intervalRef = useRef<number | null>(null);
-  const progressContainerRef = useRef<HTMLDivElement | null>(null);
+function FooterComponent() {
+  const {
+    cancionActual,
+    isPlaying,
+    currentTime,
+    volume,
+    isMuted,
+    togglePlay,
+    setCurrentTime,
+    setVolume,
+    toggleMute,
+    onNext,
+    onPrev,
+  } = usePlayer();
 
   const parseDuration = (duracion?: string) => {
     if (!duracion) return 0;
@@ -54,83 +44,25 @@ function FooterComponent({
     return `${min}:${sec.toString().padStart(2, '0')}`;
   };
 
-  useEffect(() => {
-    if (isPlaying && totalSeconds > 0 && !isDragging) {
-      intervalRef.current = window.setInterval(() => {
-        setCurrentTime((prevTime) => {
-          if (prevTime + 1 >= totalSeconds) {
-            clearInterval(intervalRef.current!);
-            intervalRef.current = null;
-            onNext();
-            return 0;
-          }
-          return prevTime + 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [isPlaying, totalSeconds, isDragging, onNext]);
-
-  useEffect(() => {
-    setCurrentTime(0);
-  }, [cancionActual]);
-
   const progressPercent = totalSeconds > 0 ? (currentTime / totalSeconds) * 100 : 0;
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!progressContainerRef.current || totalSeconds === 0) return;
-    const rect = progressContainerRef.current.getBoundingClientRect();
+    if (totalSeconds === 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const width = rect.width;
     const newTime = Math.floor((clickX / width) * totalSeconds);
     setCurrentTime(newTime);
   };
 
-  const handleMouseDown = () => {
-    setIsDragging(true);
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging || !progressContainerRef.current || totalSeconds === 0) return;
-    const rect = progressContainerRef.current.getBoundingClientRect();
-    const posX = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
-    const newTime = Math.floor((posX / rect.width) * totalSeconds);
-    setCurrentTime(newTime);
-  };
-
-  const handleMouseUp = () => {
-    if (isDragging) {
-      setIsDragging(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    } else {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isDragging]);
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
-
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
-    setIsMuted(newVolume === 0);
+    if (newVolume === 0) {
+      toggleMute();
+    } else if (isMuted) {
+      toggleMute();
+    }
   };
 
   return (
@@ -140,7 +72,7 @@ function FooterComponent({
           <div
             className="now-playing-cover"
             style={{
-              backgroundImage: `url(${buildImageUrl((cancionActual?.album.portada || ''))})`,
+              backgroundImage: `url(${buildImageUrl(cancionActual?.album.portada)})`,
               backgroundSize: 'cover',
               width: '60px',
               height: '60px',
@@ -152,7 +84,7 @@ function FooterComponent({
         </Link>
         <div className="now-playing-info">
           <h4>{cancionActual?.titulo || 'Nada reproduciendo'}</h4>
-          <p>{cancionActual?.compositor || ''}</p>
+          <p>{cancionActual?.artista.nombre || ''}</p>
         </div>
         <button className="control-btn" id="heart">
           <span className="material-symbols-rounded">heart_plus</span>
@@ -163,7 +95,7 @@ function FooterComponent({
         <button className="control-btn" onClick={onPrev}>
           <span className="material-symbols-rounded">skip_previous</span>
         </button>
-        <button className="control-btn" onClick={isPlaying ? onPause : onPlay}>
+        <button className="control-btn" onClick={togglePlay}>
           <span className="material-symbols-rounded">
             {isPlaying ? 'pause' : 'play_arrow'}
           </span>
@@ -176,7 +108,7 @@ function FooterComponent({
       <div className="volume-controls">
         <button className="control-btn" onClick={toggleMute}>
           <span className="material-symbols-rounded">
-            {isMuted || volume === 0 ? 'volume_off' : volume < 0.5 ? 'volume_down' : 'volume_up'}
+            {isMuted ? 'volume_off' : volume < 0.5 ? 'volume_down' : 'volume_up'}
           </span>
         </button>
         <input
@@ -194,7 +126,6 @@ function FooterComponent({
         <span className="time current-time">{formatTime(currentTime)}</span>
         <div
           className="progress-container"
-          ref={progressContainerRef}
           onClick={handleProgressClick}
         >
           <div
@@ -204,7 +135,6 @@ function FooterComponent({
           <div
             className="progress-thumb"
             style={{ left: `${progressPercent}%` }}
-            onMouseDown={handleMouseDown}
           />
         </div>
         <span className="time total-time">{cancionActual?.duracion || '0:00'}</span>

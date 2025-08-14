@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './PrincipalPage.module.css';
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
 import NavbarComponent from '../../components/NavBarComponent/NavbarComponent';
 import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
 import { ApiMusica } from '../../services/api';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Se usa en el JSX (puedes mantenerlo)
 import type { Cancion, Album } from '../../services/api';
+import { usePlayer } from '../../context/PlayerContext';
 
 const BASE_URL = 'https://reactmusic-back.onrender.com/';
 
@@ -22,17 +23,12 @@ function buildImageUrl(path?: string) {
 function PrincipalPage() {
     const [canciones, setCanciones] = useState<Cancion[]>([]);
     const [albumes, setAlbumes] = useState<Album[]>([]);
-    const [cancionActual, setCancionActual] = useState<Cancion | undefined>(undefined);
-    const [indiceActual, setIndiceActual] = useState<number>(0);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef<HTMLAudioElement>(null);
-
     const [indiceHero, setIndiceHero] = useState<number>(0);
-    const [fade, setFade] = useState<boolean>(true);
-
-    // Sidebar y móvil
+    const [fade, setFade] = useState<boolean>(true); // Se usa en el JSX (puedes mantenerlo)
     const [showSidebar, setShowSidebar] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    
+    const { play } = usePlayer();
 
     useEffect(() => {
         ApiMusica.getCanciones()
@@ -80,56 +76,10 @@ function PrincipalPage() {
     const reproducirCancion = (index: number) => {
         const cancion = canciones[index];
         if (!cancion) return;
-        setCancionActual(cancion);
-        setIndiceActual(index);
-        setTimeout(() => {
-            audioRef.current?.play();
-            setIsPlaying(true);
-        }, 100);
+        play(cancion, canciones, index);
     };
 
-    const onPlay = () => {
-        audioRef.current?.play();
-        setIsPlaying(true);
-    };
-
-    const onPause = () => {
-        audioRef.current?.pause();
-        setIsPlaying(false);
-    };
-
-    const onNext = () => {
-        if (canciones.length === 0) return;
-        const nextIndex = (indiceActual + 1) % canciones.length;
-        reproducirCancion(nextIndex);
-    };
-
-    const onPrev = () => {
-        if (canciones.length === 0) return;
-        const prevIndex = (indiceActual - 1 + canciones.length) % canciones.length;
-        reproducirCancion(prevIndex);
-    };
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        const handlePlay = () => setIsPlaying(true);
-        const handlePause = () => setIsPlaying(false);
-        const handleEnded = () => onNext();
-
-        audio.addEventListener('play', handlePlay);
-        audio.addEventListener('pause', handlePause);
-        audio.addEventListener('ended', handleEnded);
-
-        return () => {
-            audio.removeEventListener('play', handlePlay);
-            audio.removeEventListener('pause', handlePause);
-            audio.removeEventListener('ended', handleEnded);
-        };
-    }, [indiceActual, canciones]);
-
-    const albumHero = albumes[indiceHero];
+    const albumHero = albumes[indiceHero]; // Se usa en el JSX (puedes mantenerlo)
 
     const toggleSidebar = () => setShowSidebar(prev => !prev);
     const closeSidebar = () => {
@@ -149,7 +99,7 @@ function PrincipalPage() {
                 }}
             >
                 <div className={styles.heroSection}>
-                    {albumHero ? (
+                    {albumHero && (
                         <div
                             className={styles.newRelease}
                             style={{
@@ -202,12 +152,6 @@ function PrincipalPage() {
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className={styles.heroSkeleton}>
-                            <div className={styles.heroImageSkeleton} />
-                            <div className={styles.heroTextSkeleton} />
-                            <div className={styles.heroButtonSkeleton} />
                         </div>
                     )}
 
@@ -303,17 +247,8 @@ function PrincipalPage() {
                     </div>
                 </div>
             </div>
-
-            <FooterComponent
-                cancionActual={cancionActual}
-                onPlay={onPlay}
-                onPause={onPause}
-                onNext={onNext}
-                onPrev={onPrev}
-                isPlaying={isPlaying}
-            />
-
-            <audio ref={audioRef} src={cancionActual?.audioUrl || undefined} />
+            
+            <FooterComponent />
         </div>
     );
 }

@@ -56,8 +56,10 @@ const NavbarComponent: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
         >
           <span className="material-symbols-outlined">menu</span>
         </button>
-        <h1 className={styles.logo}>MP Music</h1>
-      </div>
+        <Link to="/" className={styles.logoLink}>
+          <h1 className={styles.logo}>MP Music</h1>
+        </Link>     
+       </div>
 
       <div className={styles.navbarSearch}>
         <input

@@ -144,12 +144,38 @@
 
 
 @media (max-width: 768px) {
-    .mobileMenuButton {
+  .mobileMenuButton {
         display: block;
     }
-
-    .navbarSearch {
-        display: none;
+    
+    .navbar {
+        justify-content: center;
+        padding: 0 10px;
     }
+    
+    .navbarSearch {
+        width: 70%;
+        margin: 10px 40px 10px  0px;
+    }
+    
+    .logo {
+        display: none; /* Ocultamos el logo */
+    }
+}
+.logoLink {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}
 
+.logo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-left: 1rem;
+}
+
+.logo:hover {
+  opacity: 0.8;
 }

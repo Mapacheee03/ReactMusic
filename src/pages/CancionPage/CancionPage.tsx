@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './CancionPage.module.css';
 import type { Cancion } from '../../services/api';
 import { ApiMusica } from '../../services/api';
-
+import { usePlayer } from '../../context/PlayerContext';
 import NavbarComponent from '../../components/NavBarComponent/NavbarComponent';
 import SideBarComponent from '../../components/SideBarCamponent/SideBarComponent';
 import FooterComponent from '../../components/FooterComponent/FooterComponent';
@@ -27,11 +27,10 @@ const CancionPage = () => {
 
   const [cancion, setCancion] = useState<Cancion | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-
-  const audioRef = useRef<HTMLAudioElement>(null);
+  
+  const { play, isPlaying } = usePlayer();
 
   useEffect(() => {
     if (!id) return;
@@ -42,12 +41,13 @@ const CancionPage = () => {
         const encontrada = canciones.find(c => c.id === Number(id));
 
         if (encontrada) {
-          // Asignar audioUrl si no tiene
           const cancionConAudio: Cancion = {
             ...encontrada,
-            audioUrl: encontrada.audioUrl || `https://reactmusic-back.onrender.com/audios/${encontrada.id}.mp3`,
+            audioUrl: encontrada.audioUrl || `${BASE_URL}audios/${encontrada.id}.mp3`,
           };
           setCancion(cancionConAudio);
+          // Reproducir automáticamente al cargar
+          play(cancionConAudio, [cancionConAudio], 0);
         } else {
           setCancion(null);
         }
@@ -71,19 +71,6 @@ const CancionPage = () => {
     window.addEventListener('resize', checkIfMobile);
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
-
-  const onPlay = () => {
-    audioRef.current?.play();
-    setIsPlaying(true);
-  };
-
-  const onPause = () => {
-    audioRef.current?.pause();
-    setIsPlaying(false);
-  };
-
-  const onNext = () => {};
-  const onPrev = () => {};
 
   const toggleSidebar = () => setShowSidebar(prev => !prev);
   const closeSidebar = () => {
@@ -122,11 +109,32 @@ const CancionPage = () => {
             </div>
           </section>
         </main>
+        <FooterComponent />
       </div>
     );
   }
 
-  if (!cancion) return <div className={styles.error}>Canción no encontrada</div>;
+  if (!cancion) {
+    return (
+      <div className={styles.container}>
+        <NavbarComponent onToggleSidebar={toggleSidebar} />
+        <main className={styles.main}>
+          <div className={styles.errorContainer}>
+            <h2>Canción no encontrada</h2>
+            <p>La canción que buscas no está disponible</p>
+            <button 
+              className={styles.backButton} 
+              onClick={() => navigate(-1)}
+            >
+              <FaArrowLeft style={{ marginRight: '8px' }} />
+              Volver
+            </button>
+          </div>
+        </main>
+        <FooterComponent />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -148,48 +156,53 @@ const CancionPage = () => {
         <section className={styles.songDetailCard}>
           <div className={styles.coverContainer}>
             <img
-              src={buildImageUrl(cancion.album?.portada) || undefined}
-              alt={cancion.album?.titulo}
+              src={buildImageUrl(cancion.album?.portada) || '/default-album.jpg'}
+              alt={cancion.album?.titulo || 'Portada del álbum'}
               className={styles.coverImage}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/default-album.jpg';
+              }}
             />
           </div>
 
           <div className={styles.songInfo}>
             <h1 className={styles.songTitle}>{cancion.titulo}</h1>
-            <h3 className={styles.artistName}>{cancion.artista?.nombre}</h3>
-            <h4 className={styles.albumName}>Álbum: {cancion.album?.titulo}</h4>
+            <h3 className={styles.artistName}>{cancion.artista?.nombre || 'Artista desconocido'}</h3>
+            <h4 className={styles.albumName}>Álbum: {cancion.album?.titulo || 'Sin álbum'}</h4>
 
             <div className={styles.metadata}>
-              <p><strong>Año:</strong> {cancion.año}</p>
-              <p><strong>Duración:</strong> {cancion.duracion}</p>
+              <p><strong>Año:</strong> {cancion.año || 'Desconocido'}</p>
+              <p><strong>Duración:</strong> {cancion.duracion || '--:--'}</p>
+              {cancion.compositor && <p><strong>Compositor:</strong> {cancion.compositor}</p>}
             </div>
 
-            {cancion.audioUrl ? (
+            {cancion.letra && (
+              <div className={styles.lyricsSection}>
+                <h3>Letra</h3>
+                <div className={styles.lyricsContent}>
+                  {cancion.letra.split('\n').map((line, i) => (
+                    <p key={i}>{line || <br />}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.audioContainer}>
               <audio
                 controls
-                ref={audioRef}
                 className={styles.audioPlayer}
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
+                src={cancion.audioUrl}
+                // Manejar la reproducción cuando el usuario interactúa directamente con el reproductor
+                onPlay={() => play(cancion, [cancion], 0)}
               >
-                <source src={cancion.audioUrl} type="audio/mp3" />
-                Tu navegador no soporta audio.
+                Tu navegador no soporta el elemento de audio.
               </audio>
-            ) : (
-              <p className={styles.noAudio}>Audio no disponible.</p>
-            )}
+            </div>
           </div>
         </section>
       </main>
 
-      <FooterComponent
-        cancionActual={cancion}
-        onPlay={onPlay}
-        onPause={onPause}
-        onNext={onNext}
-        onPrev={onPrev}
-        isPlaying={isPlaying}
-      />
+      <FooterComponent />
     </div>
   );
 };
