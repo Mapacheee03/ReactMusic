@@ -30,7 +30,7 @@ const CancionPage = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   
-  const { play, isPlaying } = usePlayer();
+  const { play } = usePlayer(); // Eliminado isPlaying ya que no se usaba
 
   useEffect(() => {
     if (!id) return;
@@ -59,7 +59,7 @@ const CancionPage = () => {
     };
 
     fetchCancion();
-  }, [id]);
+  }, [id, play]); // Añadido play como dependencia
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -192,7 +192,6 @@ const CancionPage = () => {
                 controls
                 className={styles.audioPlayer}
                 src={cancion.audioUrl}
-                // Manejar la reproducción cuando el usuario interactúa directamente con el reproductor
                 onPlay={() => play(cancion, [cancion], 0)}
               >
                 Tu navegador no soporta el elemento de audio.
